@@ -1,0 +1,16 @@
+# Build-Ausgaben
+bin/
+obj/
+
+# Self-contained Publish-Artefakte
+publish/
+
+# IDE / Editor
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Sonstiges
+*.log

@@ -1,0 +1,317 @@
+<UserControl x:Class="XHub.Scola.ScolaPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:converters="clr-namespace:XHub.Converters"
+             mc:Ignorable="d"
+             d:DesignWidth="460" d:DesignHeight="700">
+    <UserControl.Resources>
+
+        <converters:QuickActionVisibilityConverter x:Key="QuickActionVisibilityConverter" />
+
+        <!-- Heller, schlichter Look -->
+        <SolidColorBrush x:Key="L.PanelBg" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="L.FieldBg" Color="#F3F5F8" />
+        <SolidColorBrush x:Key="L.Text" Color="#1E2530" />
+        <SolidColorBrush x:Key="L.TextSecondary" Color="#5A6573" />
+        <SolidColorBrush x:Key="L.TextSubtle" Color="#8B95A4" />
+        <SolidColorBrush x:Key="L.Border" Color="#E4E8EE" />
+        <SolidColorBrush x:Key="L.Hover" Color="#EDF1F7" />
+        <SolidColorBrush x:Key="L.Btn" Color="#F2F4F7" />
+        <SolidColorBrush x:Key="L.BtnHover" Color="#E6EAF0" />
+        <SolidColorBrush x:Key="L.BtnText" Color="#3A4250" />
+        <SolidColorBrush x:Key="L.BtnBorder" Color="#D5DBE3" />
+        <SolidColorBrush x:Key="L.ToggleActive" Color="#DCE1E8" />
+
+        <!-- Kompakte TN-Kachel (grau, Buttons weiss) -->
+        <Style x:Key="L.Chip" TargetType="Border">
+            <Setter Property="Background" Value="#ECEFF3" />
+            <Setter Property="BorderBrush" Value="{StaticResource L.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="7,5" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+
+        <!-- Aktions-Button im Original-Stil (weiss, Rahmen, rund) -->
+        <Style x:Key="L.ActionButton" TargetType="Button">
+            <Setter Property="Background" Value="#FFFFFF" />
+            <Setter Property="Foreground" Value="{StaticResource L.BtnText}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Padding" Value="9,4" />
+            <Setter Property="Margin" Value="3,0,0,0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bg" Background="{TemplateBinding Background}"
+                                BorderBrush="{StaticResource L.BtnBorder}" BorderThickness="1"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter TextBlock.Foreground="{TemplateBinding Foreground}"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{StaticResource L.BtnHover}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Kleines x -->
+        <Style x:Key="L.ChipClose" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{StaticResource L.TextSubtle}" />
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Height" Value="16" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Margin" Value="4,0,0,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bg" Background="Transparent" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              TextBlock.Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{StaticResource L.Hover}" />
+                                <Setter Property="Foreground" Value="#D17878" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Primaerer Importieren-Button -->
+        <Style x:Key="L.PrimaryButton" TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource L.BtnText}" />
+            <Setter Property="Background" Value="#FFFFFF" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="MinWidth" Value="112" />
+            <Setter Property="Padding" Value="18,10" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bg" Background="{TemplateBinding Background}"
+                                BorderBrush="{StaticResource L.BtnBorder}" BorderThickness="1" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{StaticResource L.BtnHover}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Klappbarer Header mit Dreieck links (Liste neu einfuegen) -->
+        <Style x:Key="L.CollapsibleHeader" TargetType="ToggleButton">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Bg" Background="Transparent" CornerRadius="6" Padding="6,5">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="Tri" Text="&#xE76C;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="10" Foreground="{StaticResource L.TextSecondary}"
+                                           VerticalAlignment="Center" Margin="0,0,7,0" />
+                                <ContentPresenter VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Tri" Property="Text" Value="&#xE70D;" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{StaticResource L.Hover}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Batch-Umschalter -->
+        <Style x:Key="L.BatchToggle" TargetType="ToggleButton">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{StaticResource L.TextSecondary}" />
+            <Setter Property="FontSize" Value="11.5" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Bg" Background="Transparent"
+                                BorderBrush="{StaticResource L.Border}" BorderThickness="1"
+                                CornerRadius="7" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter TextBlock.Foreground="{TemplateBinding Foreground}"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{StaticResource L.Hover}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{StaticResource L.ToggleActive}" />
+                                <Setter Property="Foreground" Value="{StaticResource L.Text}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- TN-Kachel-Vorlage -->
+        <DataTemplate x:Key="L.ChipTemplate">
+            <Border Style="{StaticResource L.Chip}" Cursor="Hand"
+                    Opacity="{Binding DisplayOpacity}"
+                    MouseLeftButtonUp="Chip_OnClick"
+                    PreviewMouseLeftButtonDown="Chip_OnPreviewMouseDown"
+                    PreviewMouseMove="Chip_OnPreviewMouseMove">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" MinWidth="16" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <CheckBox Grid.Column="0" IsChecked="{Binding IsPresent, Mode=TwoWay}"
+                              VerticalAlignment="Center" Margin="0,0,8,0"
+                              Checked="Presence_OnChanged" Unchecked="Presence_OnChanged"
+                              ToolTip="Anwesend (zählt für BI-To-do)" />
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding FullName}" FontSize="12.5" FontWeight="SemiBold"
+                                       Foreground="{StaticResource L.Text}" MaxWidth="240"
+                                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="{Binding MatchSymbol}" Foreground="{Binding MatchColor}"
+                                       ToolTip="{Binding MatchTooltip}"
+                                       FontSize="11" VerticalAlignment="Center" Margin="5,0,0,0" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,1,0,0">
+                            <TextBlock Text="{Binding Initials}" FontSize="10"
+                                       Foreground="{StaticResource L.TextSubtle}" VerticalAlignment="Center" />
+                            <ItemsControl ItemsSource="{Binding HintMarkers}" Margin="7,0,0,0" VerticalAlignment="Center">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Ellipse Width="8" Height="8" Margin="0,0,3,0"
+                                                 Fill="{Binding MarkerColor}" ToolTip="{Binding Text}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Style="{StaticResource L.ActionButton}" Content="Ordner" Tag="folder"
+                                Visibility="{Binding DataContext.VisibleQuickActions, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource QuickActionVisibilityConverter}, ConverterParameter=folder}"
+                                PreviewMouseLeftButtonDown="TrayAction_OnPreviewMouseLeftButtonDown" />
+                        <Button Style="{StaticResource L.ActionButton}" Content="Akte" Tag="document"
+                                Visibility="{Binding DataContext.VisibleQuickActions, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource QuickActionVisibilityConverter}, ConverterParameter=document}"
+                                PreviewMouseLeftButtonDown="TrayAction_OnPreviewMouseLeftButtonDown" />
+                        <Button Style="{StaticResource L.ActionButton}" Content="BU" Tag="bu"
+                                Visibility="{Binding DataContext.VisibleQuickActions, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource QuickActionVisibilityConverter}, ConverterParameter=bu}"
+                                PreviewMouseLeftButtonDown="TrayAction_OnPreviewMouseLeftButtonDown" />
+                        <Button Style="{StaticResource L.ActionButton}" Content="BI" Tag="bi"
+                                Visibility="{Binding DataContext.VisibleQuickActions, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource QuickActionVisibilityConverter}, ConverterParameter=bi}"
+                                PreviewMouseLeftButtonDown="TrayAction_OnPreviewMouseLeftButtonDown" />
+                        <Button Style="{StaticResource L.ActionButton}" Content="BE" Tag="be"
+                                Visibility="{Binding DataContext.VisibleQuickActions, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource QuickActionVisibilityConverter}, ConverterParameter=be}"
+                                PreviewMouseLeftButtonDown="TrayAction_OnPreviewMouseLeftButtonDown" />
+                        <Button Style="{StaticResource L.ActionButton}" Content="LB" Tag="lb"
+                                Visibility="{Binding DataContext.VisibleQuickActions, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource QuickActionVisibilityConverter}, ConverterParameter=lb}"
+                                PreviewMouseLeftButtonDown="TrayAction_OnPreviewMouseLeftButtonDown" />
+                        <Button Style="{StaticResource L.ActionButton}" Content="Eintrag BU" Tag="entry_bu"
+                                Visibility="{Binding DataContext.VisibleQuickActions, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource QuickActionVisibilityConverter}, ConverterParameter=entry_bu}"
+                                PreviewMouseLeftButtonDown="TrayAction_OnPreviewMouseLeftButtonDown" />
+                        <Button Style="{StaticResource L.ActionButton}" Content="Eintrag BI" Tag="entry_bi"
+                                Visibility="{Binding DataContext.VisibleQuickActions, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource QuickActionVisibilityConverter}, ConverterParameter=entry_bi}"
+                                PreviewMouseLeftButtonDown="TrayAction_OnPreviewMouseLeftButtonDown" />
+                        <Button Style="{StaticResource L.ActionButton}" Content="Eintrag BE" Tag="entry_be"
+                                Visibility="{Binding DataContext.VisibleQuickActions, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource QuickActionVisibilityConverter}, ConverterParameter=entry_be}"
+                                PreviewMouseLeftButtonDown="TrayAction_OnPreviewMouseLeftButtonDown" />
+                        <Button Style="{StaticResource L.ActionButton}" Content="Eintrag LB" Tag="entry_lb"
+                                Visibility="{Binding DataContext.VisibleQuickActions, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource QuickActionVisibilityConverter}, ConverterParameter=entry_lb}"
+                                PreviewMouseLeftButtonDown="TrayAction_OnPreviewMouseLeftButtonDown" />
+                    </StackPanel>
+
+                    <Button Grid.Column="4" Style="{StaticResource L.ChipClose}" Content="✕"
+                            ToolTip="Aus Liste entfernen" Click="ChipClose_OnClick" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Border Background="{StaticResource L.PanelBg}" CornerRadius="12"
+            AllowDrop="True" DragOver="Panel_OnDragOver" Drop="Panel_OnDrop">
+        <Grid Margin="10,8,10,8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Kopfzeile: Liste neu einfuegen (klappbar) + Batch -->
+            <StackPanel Grid.Row="0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <ToggleButton x:Name="ImportToggle" Grid.Column="0" Style="{StaticResource L.CollapsibleHeader}"
+                                  IsChecked="False" Checked="ImportToggle_OnToggle" Unchecked="ImportToggle_OnToggle">
+                        <TextBlock Text="Liste neu einfügen" FontSize="12.5" FontWeight="SemiBold"
+                                   Foreground="{StaticResource L.Text}" />
+                    </ToggleButton>
+                    <ToggleButton x:Name="BatchToggle" Grid.Column="1" Content="Batch"
+                                  Style="{StaticResource L.BatchToggle}" VerticalAlignment="Center"
+                                  Margin="8,0,0,0" Checked="BatchToggle_OnToggle" Unchecked="BatchToggle_OnToggle" />
+                </Grid>
+
+                <Border x:Name="ImportBody" Visibility="Collapsed" Margin="0,12,0,10"
+                        Background="{StaticResource L.FieldBg}" CornerRadius="8" Padding="8">
+                    <StackPanel>
+                        <TextBox x:Name="ImportInput" MinHeight="44" MaxHeight="200"
+                                 AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                                 Background="#FFFFFF" Foreground="{StaticResource L.Text}"
+                                 BorderBrush="{StaticResource L.Border}" BorderThickness="1" Padding="8" />
+                        <Button x:Name="ImportButton" Content="Importieren" Style="{StaticResource L.PrimaryButton}"
+                                HorizontalAlignment="Right" Margin="0,8,0,0" Click="ImportButton_OnClick" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- TN-Liste -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,16,0,0">
+                <ItemsControl x:Name="TrayItems" ItemTemplate="{StaticResource L.ChipTemplate}" />
+            </ScrollViewer>
+
+            <!-- Status / Auswertung -->
+            <Border Grid.Row="2" BorderBrush="{StaticResource L.Border}" BorderThickness="0,1,0,0"
+                    Padding="2,6,2,0" Margin="0,4,0,0">
+                <TextBlock x:Name="StatusText" Text="Auswertung: 0 Einträge (0 anwesend, 0 abwesend)"
+                           FontSize="11" Foreground="{StaticResource L.TextSubtle}" />
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

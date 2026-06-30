@@ -1,0 +1,421 @@
+<Window x:Class="XHub.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Einstellungen"
+        Icon="pack://application:,,,/Assets/icon.ico"
+        Width="720"
+        Height="700"
+        MinWidth="560"
+        MinHeight="660"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource Brush.WindowBg}"
+        Foreground="{DynamicResource Brush.PrimaryText}">
+    <Window.Resources>
+
+        <Style x:Key="SectionEyebrowStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.SecondaryText}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style x:Key="TileCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource Brush.PanelBg}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="12,10" />
+        </Style>
+
+        <Style x:Key="SettingsInputStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="{DynamicResource Brush.CardBg}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.PrimaryText}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="10,5" />
+        </Style>
+
+        <Style x:Key="SettingsComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Background" Value="{DynamicResource Brush.CardBg}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.PrimaryText}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="8,3" />
+        </Style>
+
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.AccentHover}" />
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Brush.AccentHover}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.AccentPressed}" />
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Brush.AccentPressed}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Chrome" Property="Opacity" Value="0.5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ActionCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.PrimaryText}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Margin" Value="0,0,8,8" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Border x:Name="Chrome"
+                                Background="{DynamicResource Brush.CardBg}"
+                                BorderBrush="{DynamicResource Brush.Border}"
+                                BorderThickness="1"
+                                CornerRadius="7"
+                                Padding="10,6"
+                                MinWidth="104">
+                            <DockPanel>
+                                <Border x:Name="Indicator"
+                                        DockPanel.Dock="Left"
+                                        Width="16"
+                                        Height="16"
+                                        CornerRadius="4"
+                                        Background="Transparent"
+                                        BorderBrush="{DynamicResource Brush.Border}"
+                                        BorderThickness="1"
+                                        Margin="0,0,8,0">
+                                    <TextBlock x:Name="IndicatorText"
+                                               Text=""
+                                               FontSize="11"
+                                               FontWeight="Bold"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Foreground="#FFFFFF" />
+                                </Border>
+                                <ContentPresenter VerticalAlignment="Center" />
+                            </DockPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.CardHover}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.CardBg}" />
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                                <Setter TargetName="Indicator" Property="Background" Value="{DynamicResource Brush.SecondaryText}" />
+                                <Setter TargetName="Indicator" Property="BorderBrush" Value="{DynamicResource Brush.SecondaryText}" />
+                                <Setter TargetName="IndicatorText" Property="Text" Value="✓" />
+                                <Setter TargetName="IndicatorText" Property="Foreground" Value="#FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ToggleSwitchStyle" TargetType="CheckBox">
+            <Setter Property="Width" Value="38" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid>
+                            <Border x:Name="Track"
+                                    Background="{DynamicResource Brush.CardBg}"
+                                    BorderBrush="{DynamicResource Brush.Border}"
+                                    BorderThickness="1"
+                                    CornerRadius="10" />
+                            <Border x:Name="Thumb"
+                                    Width="14"
+                                    Height="14"
+                                    HorizontalAlignment="Left"
+                                    Margin="3,0,0,0"
+                                    Background="{DynamicResource Brush.SecondaryText}"
+                                    CornerRadius="7" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Track" Property="Background" Value="{DynamicResource Brush.AccentSubtle}" />
+                                <Setter TargetName="Track" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                                <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right" />
+                                <Setter TargetName="Thumb" Property="Margin" Value="0,0,3,0" />
+                                <Setter TargetName="Thumb" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="InfoButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Height" Value="16" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="8,0,0,0" />
+            <Setter Property="Cursor" Value="Help" />
+            <Setter Property="Background" Value="{DynamicResource Brush.CardBg}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.SecondaryText}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"
+                Background="{DynamicResource Brush.PanelBg}"
+                BorderBrush="{DynamicResource Brush.Border}"
+                BorderThickness="0,0,0,1"
+                Padding="24,12">
+            <Grid>
+                <TextBlock Text="Einstellungen"
+                           FontSize="15"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                    <Button Content="Abbrechen"
+                            Width="104"
+                            Margin="0,0,8,0"
+                            Padding="10,5"
+                            Click="CancelButton_OnClick" />
+                    <Button Content="Speichern"
+                            Width="104"
+                            Padding="10,5"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Click="SaveButton_OnClick" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      CanContentScroll="False">
+        <Grid Margin="24,18,24,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0">
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                               Text="PFADE"
+                               Style="{StaticResource SectionEyebrowStyle}"
+                               Margin="0,0,12,0" />
+                    <Border Grid.Column="1"
+                            Height="1"
+                            Background="{DynamicResource Brush.Border}"
+                            VerticalAlignment="Center" />
+                </Grid>
+
+                <Grid Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="170" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Lehrvorbereitung (LV)" Style="{StaticResource FieldLabelStyle}" />
+                    <TextBox Grid.Column="1" x:Name="ServerPathTextBox" Style="{StaticResource SettingsInputStyle}" />
+                </Grid>
+
+                <Grid Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="170" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Lehrbegleitung (LB)" Style="{StaticResource FieldLabelStyle}" />
+                    <TextBox Grid.Column="1" x:Name="LbPathTextBox" Style="{StaticResource SettingsInputStyle}" />
+                </Grid>
+
+                <Grid Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="170" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Start" Style="{StaticResource FieldLabelStyle}" />
+                    <TextBox Grid.Column="1" x:Name="StartPathTextBox" Style="{StaticResource SettingsInputStyle}" />
+                </Grid>
+
+                <Grid Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="170" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Austritte" Style="{StaticResource FieldLabelStyle}" />
+                    <TextBox Grid.Column="1" x:Name="ExitPathTextBox" Style="{StaticResource SettingsInputStyle}" />
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="170" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Stundenplan (DOCX oder Ordner)" Style="{StaticResource FieldLabelStyle}" />
+                    <TextBox Grid.Column="1" x:Name="SchedulePathTextBox" Style="{StaticResource SettingsInputStyle}" />
+                </Grid>
+            </StackPanel>
+
+            <Grid Grid.Row="1" Margin="0,16,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Style="{StaticResource TileCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="DARSTELLUNG"
+                                   Style="{StaticResource SectionEyebrowStyle}"
+                                   Margin="0,0,0,10" />
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" MinHeight="60">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Dunkelmodus"
+                                           Style="{StaticResource FieldLabelStyle}"
+                                           Margin="0,0,0,8" />
+                                <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Bottom">
+                                    <CheckBox x:Name="ThemeToggleCheckBox"
+                                              Style="{StaticResource ToggleSwitchStyle}"
+                                              Checked="ThemeToggleCheckBox_OnChanged"
+                                              Unchecked="ThemeToggleCheckBox_OnChanged" />
+                                    <TextBlock x:Name="ThemeModeTextBlock"
+                                               Margin="8,0,0,0"
+                                               VerticalAlignment="Center"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource Brush.SecondaryText}" />
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Style="{StaticResource TileCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="EINTRÄGE"
+                                   Style="{StaticResource SectionEyebrowStyle}"
+                                   Margin="0,0,0,8" />
+                        <CheckBox x:Name="AutoPrefillEntryCheckBox"
+                                  Style="{StaticResource ActionCheckBoxStyle}"
+                                  MinWidth="0"
+                                  Margin="0,0,0,8"
+                                  Content="Datum/Kürzel vorfüllen" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       Text="Kürzel"
+                                       Style="{StaticResource FieldLabelStyle}"
+                                       VerticalAlignment="Center" />
+                            <TextBox x:Name="DefaultEntryInitialsTextBox"
+                                     Grid.Column="2"
+                                     Style="{StaticResource SettingsInputStyle}"
+                                     IsEnabled="{Binding IsChecked, ElementName=AutoPrefillEntryCheckBox}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="2" Margin="0,12,0,0" Style="{StaticResource TileCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="Aktionen"
+                               FontSize="17"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,2" />
+                    <TextBlock Text="Buttons und Hilfsfunktionen"
+                               Style="{StaticResource FieldLabelStyle}"
+                               Margin="0,0,0,10" />
+                    <WrapPanel>
+                        <CheckBox x:Name="FolderActionCheckBox"   Style="{StaticResource ActionCheckBoxStyle}" Content="Ordner" />
+                        <CheckBox x:Name="DocumentActionCheckBox" Style="{StaticResource ActionCheckBoxStyle}" Content="Akte" />
+                        <CheckBox x:Name="BuActionCheckBox"       Style="{StaticResource ActionCheckBoxStyle}" Content="BU" />
+                        <CheckBox x:Name="BiActionCheckBox"       Style="{StaticResource ActionCheckBoxStyle}" Content="BI" />
+                        <CheckBox x:Name="BeActionCheckBox"       Style="{StaticResource ActionCheckBoxStyle}" Content="BE" />
+                        <CheckBox x:Name="LbActionCheckBox"       Style="{StaticResource ActionCheckBoxStyle}" Content="LB" />
+                        <CheckBox x:Name="EntryBuActionCheckBox"  Style="{StaticResource ActionCheckBoxStyle}" Content="Eintrag BU" />
+                        <CheckBox x:Name="EntryBiActionCheckBox"  Style="{StaticResource ActionCheckBoxStyle}" Content="Eintrag BI" />
+                        <CheckBox x:Name="EntryBeActionCheckBox"  Style="{StaticResource ActionCheckBoxStyle}" Content="Eintrag BE" />
+                        <CheckBox x:Name="EntryLbActionCheckBox"  Style="{StaticResource ActionCheckBoxStyle}" Content="Eintrag LB" />
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <Button Grid.Row="3"
+                    Content="Logs"
+                    HorizontalAlignment="Right"
+                    Margin="0,8,0,0"
+                    Padding="10,3"
+                    FontSize="11"
+                    Click="OpenLogFolderButton_OnClick" />
+        </Grid>
+        </ScrollViewer>
+    </Grid>
+</Window>
+
+
+
+
