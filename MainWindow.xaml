@@ -69,6 +69,12 @@
             <Setter Property="Foreground" Value="#FFFFFF" />
         </Style>
 
+        <Style TargetType="Button" x:Key="SaveListButtonStyle" BasedOn="{StaticResource SecondaryButtonStyle}">
+            <Setter Property="Background" Value="#E6E9EF" />
+            <Setter Property="BorderBrush" Value="#D3D8E0" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.PrimaryText}" />
+        </Style>
+
         <Style TargetType="Button" x:Key="IconButtonStyle" BasedOn="{StaticResource SecondaryButtonStyle}">
             <Setter Property="Width" Value="{DynamicResource Ui.Size.IconButton}" />
             <Setter Property="Height" Value="{DynamicResource Ui.Size.IconButton}" />
@@ -789,33 +795,33 @@
                 <Border x:Name="CurrentListHeaderBorder"
                         Grid.Row="0"
                         Style="{StaticResource PanelBorderStyle}"
-                        Padding="12,10"
+                        Padding="12,9"
                         Margin="0,0,0,8">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <StackPanel>
-                            <TextBlock x:Name="CurrentListTitleTextBlock" FontSize="{DynamicResource Ui.Font.CurrentListTitle}" FontWeight="SemiBold"
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock x:Name="CurrentListTitleTextBlock" FontSize="14" FontWeight="SemiBold"
                                        Text="Temporäre Liste" VerticalAlignment="Center" />
-                            <TextBlock x:Name="CurrentListSubtitleTextBlock" Margin="0,2,0,0"
+                            <TextBlock x:Name="CurrentListSubtitleTextBlock" Margin="0,1,0,0"
                                        Foreground="{DynamicResource Brush.SecondaryText}" FontSize="{DynamicResource Ui.Font.CurrentListSubtitle}" />
                         </StackPanel>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                             <Button x:Name="ClearWorkingListButton"
                                     Style="{StaticResource SecondaryButtonStyle}"
                                     Content="Leeren"
                                     Padding="8,0"
-                                    MinHeight="{DynamicResource Ui.Size.WorkingButtonMinHeight}"
+                                    MinHeight="24"
                                     FontSize="{DynamicResource Ui.Font.SidebarMeta}"
                                     Click="ClearWorkingListButton_OnClick"
                                     Visibility="Collapsed" />
                             <Button x:Name="SaveWorkingListButton"
-                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Style="{StaticResource SaveListButtonStyle}"
                                     Content="Speichern"
                                     Padding="8,0"
-                                    MinHeight="{DynamicResource Ui.Size.WorkingButtonMinHeight}"
+                                    MinHeight="24"
                                     FontSize="{DynamicResource Ui.Font.SidebarMeta}"
                                     Click="SaveWorkingListButton_OnClick"
                                     Visibility="Collapsed" />
@@ -850,70 +856,28 @@
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
 
-                                        <Grid VerticalAlignment="Center">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="40" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Border Grid.Column="0"
-                                                    Style="{StaticResource StatusTagBadgeStyle}"
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding StatusTag}" Style="{StaticResource StatusTagTextStyle}" />
-                                            </Border>
-                                            <Grid Grid.Column="1"
-                                                  Style="{StaticResource StatusTextColumnStyle}"
-                                                  VerticalAlignment="Center">
-                                                <StackPanel VerticalAlignment="Center"
-                                                            Style="{StaticResource ParticipantTextWithInitialsPanelStyle}">
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                        <TextBlock Text="{Binding Initials}"
-                                                                   Style="{StaticResource ParticipantInitialsTextStyle}" />
-                                                        <ItemsControl ItemsSource="{Binding HintMarkers}"
-                                                                      Style="{StaticResource ParticipantHintMarkerItemsStyle}">
-                                                            <ItemsControl.ItemsPanel>
-                                                                <ItemsPanelTemplate>
-                                                                    <StackPanel Orientation="Horizontal" />
-                                                                </ItemsPanelTemplate>
-                                                            </ItemsControl.ItemsPanel>
-                                                            <ItemsControl.ItemTemplate>
-                                                                <DataTemplate>
-                                                                    <Ellipse Width="6"
-                                                                             Height="6"
-                                                                             Margin="0,0,4,0"
-                                                                             Fill="{Binding MarkerColor}"
-                                                                             ToolTip="{Binding Text}" />
-                                                                </DataTemplate>
-                                                            </ItemsControl.ItemTemplate>
-                                                        </ItemsControl>
-                                                    </StackPanel>
-                                                    <TextBlock Text="{Binding DisplayName}"
-                                                               Style="{StaticResource ParticipantNameWithInitialsTextStyle}" />
-                                                </StackPanel>
-                                                <StackPanel Style="{StaticResource ParticipantTextWithoutInitialsPanelStyle}">
-                                                    <TextBlock Text="{Binding DisplayName}"
-                                                               Style="{StaticResource ParticipantNameTextStyle}"
-                                                               VerticalAlignment="Center" />
-                                                    <ItemsControl ItemsSource="{Binding HintMarkers}"
-                                                                  Style="{StaticResource ParticipantHintMarkerItemsStyle}">
-                                                        <ItemsControl.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <StackPanel Orientation="Horizontal" />
-                                                            </ItemsPanelTemplate>
-                                                        </ItemsControl.ItemsPanel>
-                                                        <ItemsControl.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <Ellipse Width="6"
-                                                                         Height="6"
-                                                                         Margin="0,0,4,0"
-                                                                         Fill="{Binding MarkerColor}"
-                                                                         ToolTip="{Binding Text}" />
-                                                            </DataTemplate>
-                                                        </ItemsControl.ItemTemplate>
-                                                    </ItemsControl>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Grid>
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="2,0,0,0">
+                                            <TextBlock Text="{Binding DisplayName}" FontSize="12.5" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource Brush.PrimaryText}"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <StackPanel Orientation="Horizontal" Margin="0,1,0,0">
+                                                <TextBlock Text="{Binding Initials}" FontSize="10"
+                                                           Foreground="{DynamicResource Brush.SubtleText}" VerticalAlignment="Center" />
+                                                <ItemsControl ItemsSource="{Binding HintMarkers}" Margin="7,0,0,0" VerticalAlignment="Center">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <StackPanel Orientation="Horizontal" />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Ellipse Width="8" Height="8" Margin="0,0,3,0"
+                                                                     Fill="{Binding MarkerColor}" ToolTip="{Binding Text}" />
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </StackPanel>
 
                                             <WrapPanel x:Name="CurrentParticipantActionsPanel"
                                                    Grid.Column="1"

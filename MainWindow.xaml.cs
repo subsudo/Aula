@@ -2,9 +2,11 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
@@ -1278,23 +1280,66 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
         var delta = GetListPanelExpandedWidth() + 6;
         var workArea = SystemParameters.WorkArea;
+        // Rechte Kante fixieren: das Fenster waechst/schrumpft nach links,
+        // damit das links liegende Listen-Panel den neuen Platz bekommt und
+        // rechts alles an Ort und Stelle bleibt.
+        var rightEdge = Left + Width;
+        double newWidth;
         if (!open)
         {
             _widthBeforeListExpanded = Width;
-            Width = Math.Max(MinWidth, Width - delta);
+            newWidth = Math.Max(MinWidth, Width - delta);
         }
         else
         {
-            Width = _widthBeforeListExpanded is double previous
+            newWidth = _widthBeforeListExpanded is double previous
                 ? Math.Min(previous, workArea.Width)
                 : Math.Min(Width + delta, workArea.Width);
-            if (Left + Width > workArea.Right)
-            {
-                Left = Math.Max(workArea.Left, workArea.Right - Width);
-            }
-
             _widthBeforeListExpanded = null;
         }
+
+        var newLeft = rightEdge - newWidth;
+        if (newLeft < workArea.Left)
+        {
+            newLeft = workArea.Left;
+        }
+        else if (newLeft + newWidth > workArea.Right)
+        {
+            newLeft = workArea.Right - newWidth;
+        }
+
+        // Position und Breite in EINEM Win32-Aufruf setzen, sonst rendert Windows
+        // kurz die Zwischengroesse (rechte Kante springt) -> sichtbarer "Blitzer".
+        SetWindowBounds(newLeft, Top, newWidth, Height);
+    }
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
+    private const uint SwpNoZOrder = 0x0004;
+    private const uint SwpNoActivate = 0x0010;
+
+    /// <summary>
+    /// Setzt Position und Groesse des Fensters atomar (ein einziger SetWindowPos-Aufruf),
+    /// damit beim Links-Erweitern kein Zwischenframe/Flackern entsteht.
+    /// </summary>
+    private void SetWindowBounds(double left, double top, double width, double height)
+    {
+        var handle = new WindowInteropHelper(this).Handle;
+        if (handle == IntPtr.Zero)
+        {
+            Left = left;
+            Width = width;
+            return;
+        }
+
+        var dpi = VisualTreeHelper.GetDpi(this);
+        var x = (int)Math.Round(left * dpi.DpiScaleX);
+        var y = (int)Math.Round(top * dpi.DpiScaleY);
+        var cx = (int)Math.Round(width * dpi.DpiScaleX);
+        var cy = (int)Math.Round(height * dpi.DpiScaleY);
+
+        SetWindowPos(handle, IntPtr.Zero, x, y, cx, cy, SwpNoZOrder | SwpNoActivate);
     }
 
     private void ToggleDetailPanelButton_OnClick(object sender, RoutedEventArgs e)
