@@ -427,7 +427,7 @@
                                     <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="True" />
                                     <Condition Binding="{Binding DataContext.IsDetailPanelOpen, RelativeSource={RelativeSource AncestorType=Window}}" Value="True" />
                                 </MultiDataTrigger.Conditions>
-                                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.CardHover}" />
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#D3D9E2" />
                                 <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
                             </MultiDataTrigger>
                             <Trigger Property="IsMouseOver" Value="True">

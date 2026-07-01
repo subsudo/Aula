@@ -125,7 +125,29 @@ public partial class ScolaPanel : UserControl
 
         if (sender is FrameworkElement { DataContext: VM.Participant participant })
         {
+            SetSelectedInternal(participant);
             ParticipantActivated?.Invoke(this, participant);
+        }
+    }
+
+    /// <summary>Hebt die angeklickte Kachel als ausgewaehlt hervor (dunkler); alle anderen abwaehlen.</summary>
+    private void SetSelectedInternal(VM.Participant participant)
+    {
+        foreach (var p in _tray)
+        {
+            p.IsSelected = ReferenceEquals(p, participant);
+        }
+    }
+
+    /// <summary>Hebt jede Auswahl im Tray auf (z. B. bei Klick auf einen leeren Bereich).</summary>
+    public void ClearSelection()
+    {
+        foreach (var p in _tray)
+        {
+            if (p.IsSelected)
+            {
+                p.IsSelected = false;
+            }
         }
     }
 

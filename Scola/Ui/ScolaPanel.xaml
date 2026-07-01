@@ -37,8 +37,8 @@
         <Style x:Key="L.ActionButton" TargetType="Button">
             <Setter Property="Background" Value="#FFFFFF" />
             <Setter Property="Foreground" Value="{StaticResource L.BtnText}" />
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Padding" Value="9,4" />
+            <Setter Property="FontSize" Value="10.5" />
+            <Setter Property="Padding" Value="8,3.5" />
             <Setter Property="Margin" Value="3,0,0,0" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -203,7 +203,7 @@
 
         <!-- TN-Kachel-Vorlage -->
         <DataTemplate x:Key="L.ChipTemplate">
-            <Border Style="{StaticResource L.Chip}" Cursor="Hand"
+            <Border x:Name="ChipBorder" Style="{StaticResource L.Chip}" Cursor="Hand"
                     Opacity="{Binding DisplayOpacity}"
                     MouseLeftButtonUp="Chip_OnClick"
                     PreviewMouseLeftButtonDown="Chip_OnPreviewMouseDown"
@@ -287,6 +287,11 @@
                             ToolTip="Aus Liste entfernen" Click="ChipClose_OnClick" />
                 </Grid>
             </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                    <Setter TargetName="ChipBorder" Property="Background" Value="#D3D9E2" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
     </UserControl.Resources>
 
@@ -308,7 +313,7 @@
                     </Grid.ColumnDefinitions>
                     <ToggleButton x:Name="ImportToggle" Grid.Column="0" Style="{StaticResource L.CollapsibleHeader}"
                                   IsChecked="True" Checked="ImportToggle_OnToggle" Unchecked="ImportToggle_OnToggle">
-                        <TextBlock Text="Liste neu einfügen" FontSize="12.5" FontWeight="SemiBold"
+                        <TextBlock Text="Odoo-Liste einfügen" FontSize="12.5" FontWeight="SemiBold"
                                    Foreground="{StaticResource L.Text}" />
                     </ToggleButton>
                     <ToggleButton x:Name="BatchToggle" Grid.Column="1" Content="Batch"

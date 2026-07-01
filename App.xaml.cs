@@ -249,7 +249,7 @@ public partial class App : Application
                 SetResource(resources, "Ui.Font.SidebarMeta", 9d);
                 SetResource(resources, "Ui.Font.ParticipantInitials", 10d);
                 SetResource(resources, "Ui.Font.ParticipantName", 11d);
-                SetResource(resources, "Ui.Font.QuickAction", 8d);
+                SetResource(resources, "Ui.Font.QuickAction", 9d);
                 SetResource(resources, "Ui.Font.StatusTag", 8d);
                 SetResource(resources, "Ui.Font.DetailInitials", 13d);
                 SetResource(resources, "Ui.Font.DetailTitle", 16d);
@@ -287,7 +287,7 @@ public partial class App : Application
                 SetResource(resources, "Ui.Font.SidebarMeta", 9d);
                 SetResource(resources, "Ui.Font.ParticipantInitials", 10d);
                 SetResource(resources, "Ui.Font.ParticipantName", 12d);
-                SetResource(resources, "Ui.Font.QuickAction", 8d);
+                SetResource(resources, "Ui.Font.QuickAction", 9d);
                 SetResource(resources, "Ui.Font.StatusTag", 8d);
                 SetResource(resources, "Ui.Font.DetailInitials", 14d);
                 SetResource(resources, "Ui.Font.DetailTitle", 17d);
@@ -325,7 +325,7 @@ public partial class App : Application
                 SetResource(resources, "Ui.Font.SidebarMeta", 10d);
                 SetResource(resources, "Ui.Font.ParticipantInitials", 11d);
                 SetResource(resources, "Ui.Font.ParticipantName", 13d);
-                SetResource(resources, "Ui.Font.QuickAction", 9d);
+                SetResource(resources, "Ui.Font.QuickAction", 10d);
                 SetResource(resources, "Ui.Font.StatusTag", 9d);
                 SetResource(resources, "Ui.Font.DetailInitials", 15d);
                 SetResource(resources, "Ui.Font.DetailTitle", 18d);
@@ -363,7 +363,7 @@ public partial class App : Application
                 SetResource(resources, "Ui.Font.SidebarMeta", 11d);
                 SetResource(resources, "Ui.Font.ParticipantInitials", 12d);
                 SetResource(resources, "Ui.Font.ParticipantName", 14d);
-                SetResource(resources, "Ui.Font.QuickAction", 10d);
+                SetResource(resources, "Ui.Font.QuickAction", 11d);
                 SetResource(resources, "Ui.Font.StatusTag", 10d);
                 SetResource(resources, "Ui.Font.DetailInitials", 16d);
                 SetResource(resources, "Ui.Font.DetailTitle", 20d);
@@ -401,7 +401,7 @@ public partial class App : Application
                 SetResource(resources, "Ui.Font.SidebarMeta", 12d);
                 SetResource(resources, "Ui.Font.ParticipantInitials", 13d);
                 SetResource(resources, "Ui.Font.ParticipantName", 15d);
-                SetResource(resources, "Ui.Font.QuickAction", 11d);
+                SetResource(resources, "Ui.Font.QuickAction", 12d);
                 SetResource(resources, "Ui.Font.StatusTag", 11d);
                 SetResource(resources, "Ui.Font.DetailInitials", 17d);
                 SetResource(resources, "Ui.Font.DetailTitle", 22d);

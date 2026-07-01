@@ -128,6 +128,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         Loaded += (_, _) => AlignTopBarToContent();
         SizeChanged += (_, _) => UpdateLayoutAlignment();
         LayoutUpdated += (_, _) => AlignTopBarToContent();
+        PreviewMouseDown += MainWindow_OnPreviewMouseDown;
         LocationChanged += (_, _) => RefreshSearchResultsPopupPlacement();
         StateChanged += (_, _) => RefreshSearchResultsPopupPlacement();
         MainAreaBorder.SizeChanged += (_, _) => UpdateLayoutAlignment();
@@ -1083,6 +1084,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         if (CurrentListParticipantsListBox.SelectedItem is ParticipantIndexEntry entry)
         {
+            ScolaPanel.ClearSelection();
             ShowParticipantDetails(entry);
         }
     }
@@ -2407,6 +2409,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             UpdateDetailPanelState();
         }
 
+        // Nur die Scola-Kachel markieren: eine evtl. Auswahl in Actas Arbeitsliste aufheben.
+        CurrentListParticipantsListBox.SelectedItem = null;
         ShowParticipantDetails(entry);
     }
 
@@ -2477,6 +2481,69 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
 
         return current as T;
+    }
+
+    // --- Auswahl aufheben, wenn in einen leeren Bereich geklickt wird ---
+
+    private void MainWindow_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        var source = e.OriginalSource as DependencyObject;
+
+        // Klick auf eine TN-Kachel (Acta-Liste/Suche oder Scola-Chip) oder in den
+        // Detail-/Notiz-Bereich haelt die Auswahl.
+        if (FindVisualAncestor<ListBoxItem>(source) is not null) return;
+        if (FindParticipantDataContext(source) is not null) return;
+        if (IsWithinElement(source, DetailPanel) || IsWithinElement(source, NotesPanel)) return;
+
+        DeselectParticipant();
+    }
+
+    private void DeselectParticipant()
+    {
+        var hadSelection = _selectedParticipant is not null || CurrentListParticipantsListBox.SelectedItem is not null;
+        CurrentListParticipantsListBox.SelectedItem = null;
+        ScolaPanel.ClearSelection();
+        if (!hadSelection)
+        {
+            return;
+        }
+
+        _selectedParticipant = null;
+        NotesPanel.SetParticipant(null);
+        if (_isDetailPanelOpen)
+        {
+            DetailPanel.UpdateParticipant(null, GetActiveModules());
+        }
+    }
+
+    private static VerlaufsakteApp.Models.Participant? FindParticipantDataContext(DependencyObject? current)
+    {
+        while (current is not null)
+        {
+            if (current is FrameworkElement { DataContext: VerlaufsakteApp.Models.Participant participant })
+            {
+                return participant;
+            }
+
+            current = System.Windows.Media.VisualTreeHelper.GetParent(current);
+        }
+
+        return null;
+    }
+
+    private static bool IsWithinElement(DependencyObject? node, DependencyObject ancestor)
+    {
+        while (node is not null)
+        {
+            if (ReferenceEquals(node, ancestor))
+            {
+                return true;
+            }
+
+            node = System.Windows.Media.VisualTreeHelper.GetParent(node);
+        }
+
+        return false;
     }
 
     private void CurrentListParticipantsListBox_OnDragOver(object sender, DragEventArgs e)

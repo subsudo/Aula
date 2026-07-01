@@ -282,6 +282,13 @@ public class Participant : INotifyPropertyChanged
     public bool HasHintOverflow => !string.IsNullOrWhiteSpace(HintOverflowText);
     public string HintOverflowText => _hintOverflowText;
 
+    private bool _isSelected;
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set => SetField(ref _isSelected, value);
+    }
+
     public double DisplayOpacity => IsPresent ? 1.0 : 0.35;
     public bool ShowAbsenceStatus => !IsPresent;
     public bool IsMultipleFound => MatchStatus == MatchStatus.MultipleFound;
