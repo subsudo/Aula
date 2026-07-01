@@ -1315,6 +1315,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         // Position und Breite in EINEM Win32-Aufruf setzen, sonst rendert Windows
         // kurz die Zwischengroesse (rechte Kante springt) -> sichtbarer "Blitzer".
         SetWindowBounds(newLeft, Top, newWidth, Height);
+        ForceWindowRepaint();
     }
 
     [DllImport("user32.dll", SetLastError = true)]
@@ -1344,6 +1345,35 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         var cy = (int)Math.Round(height * dpi.DpiScaleY);
 
         SetWindowPos(handle, IntPtr.Zero, x, y, cx, cy, SwpNoZOrder | SwpNoActivate);
+    }
+
+    [DllImport("user32.dll")]
+    private static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, uint flags);
+
+    private const uint RdwInvalidate = 0x0001;
+    private const uint RdwErase = 0x0004;
+    private const uint RdwAllChildren = 0x0080;
+    private const uint RdwUpdateNow = 0x0100;
+
+    /// <summary>
+    /// Erzwingt nach einem programmatischen Fenster-Resize einen vollstaendigen
+    /// Repaint der HWND (inkl. Kinder) – nach dem Layout-Pass. Ohne das bleibt der
+    /// neu freigelegte Bereich (z. B. beim Aufklappen des Batch-Panels) teils
+    /// schwarz, bis der Nutzer das Fenster manuell resized.
+    /// </summary>
+    private void ForceWindowRepaint()
+    {
+        Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() =>
+        {
+            var handle = new WindowInteropHelper(this).Handle;
+            if (handle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            RedrawWindow(handle, IntPtr.Zero, IntPtr.Zero,
+                RdwInvalidate | RdwErase | RdwUpdateNow | RdwAllChildren);
+        }));
     }
 
     private void ToggleDetailPanelButton_OnClick(object sender, RoutedEventArgs e)
@@ -2345,6 +2375,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
             _widthBeforeBatch = null;
         }
+
+        ForceWindowRepaint();
     }
 
     private void ScolaPanel_OnTrayChanged(object? sender, EventArgs e)
@@ -2493,7 +2525,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         // Detail-/Notiz-Bereich haelt die Auswahl.
         if (FindVisualAncestor<ListBoxItem>(source) is not null) return;
         if (FindParticipantDataContext(source) is not null) return;
-        if (IsWithinElement(source, DetailPanel) || IsWithinElement(source, NotesPanel)) return;
+        if (IsWithinElement(source, DetailPanelBorder) || IsWithinElement(source, NotesPanel)) return;
 
         DeselectParticipant();
     }
