@@ -57,7 +57,7 @@ public sealed class BatchEntryService
             {
                 await _host.RunAsync(
                     $"Batch {bookmarkName}",
-                    service => service.InsertTextRowToTable(docPath, bookmarkName, row, bringToForeground: false));
+                    service => service.InsertTextRowToTable(docPath, bookmarkName, row, bringToForeground: true));
                 results.Add(new BatchResultLine { Name = participant.FullName, IsSuccess = true, Message = "Eintrag eingefügt" });
             }
             catch (OperationCanceledException)

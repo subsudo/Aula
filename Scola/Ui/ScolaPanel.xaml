@@ -307,7 +307,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <ToggleButton x:Name="ImportToggle" Grid.Column="0" Style="{StaticResource L.CollapsibleHeader}"
-                                  IsChecked="False" Checked="ImportToggle_OnToggle" Unchecked="ImportToggle_OnToggle">
+                                  IsChecked="True" Checked="ImportToggle_OnToggle" Unchecked="ImportToggle_OnToggle">
                         <TextBlock Text="Liste neu einfügen" FontSize="12.5" FontWeight="SemiBold"
                                    Foreground="{StaticResource L.Text}" />
                     </ToggleButton>
@@ -316,10 +316,10 @@
                                   Margin="8,0,0,0" Checked="BatchToggle_OnToggle" Unchecked="BatchToggle_OnToggle" />
                 </Grid>
 
-                <Border x:Name="ImportBody" Visibility="Collapsed" Margin="0,12,0,10"
+                <Border x:Name="ImportBody" Visibility="Visible" Margin="0,12,0,10"
                         Background="{StaticResource L.FieldBg}" CornerRadius="8" Padding="8">
                     <StackPanel>
-                        <TextBox x:Name="ImportInput" MinHeight="44" MaxHeight="200"
+                        <TextBox x:Name="ImportInput" MinHeight="96" MaxHeight="260"
                                  AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
                                  Background="#FFFFFF" Foreground="{StaticResource L.Text}"
                                  BorderBrush="{StaticResource L.Border}" BorderThickness="1" Padding="8" />

@@ -59,6 +59,26 @@ public partial class BatchPanel : UserControl
         }
     }
 
+    private void ClearBatchInput_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_busy || sender is not Button { Tag: string kind })
+        {
+            return;
+        }
+
+        var (input, status, results) = kind switch
+        {
+            "BU" => (BuInput, BuStatus, _buResults),
+            "BI" => (BiInput, BiStatus, _biResults),
+            "LB" => (LbInput, LbStatus, _lbResults),
+            _ => (BuInput, BuStatus, _buResults)
+        };
+
+        input.Clear();
+        results.Clear();
+        status.Text = string.Empty;
+    }
+
     private async void RunBatch_OnClick(object sender, RoutedEventArgs e)
     {
         if (_busy || sender is not Button { Tag: string kind })

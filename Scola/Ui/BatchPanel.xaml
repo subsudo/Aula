@@ -110,6 +110,32 @@
             </Setter>
         </Style>
 
+        <Style x:Key="B.IconTrash" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{StaticResource B.TextSubtle}" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Width" Value="36" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bg" Background="Transparent"
+                                BorderBrush="{StaticResource B.BtnBorder}" BorderThickness="1" CornerRadius="9">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              TextBlock.Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{StaticResource B.Hover}" />
+                                <Setter Property="Foreground" Value="#D17878" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="B.ResultLine" TargetType="TextBlock">
             <Setter Property="FontSize" Value="11.5" />
             <Setter Property="Margin" Value="0,1,0,1" />
@@ -169,8 +195,13 @@
                                 <Grid Margin="0,8,0,0">
                                     <TextBlock x:Name="BuStatus" Foreground="{StaticResource B.TextSubtle}"
                                                FontSize="11" VerticalAlignment="Center" />
-                                    <Button Content="Ausführen" Style="{StaticResource B.Button}"
-                                            HorizontalAlignment="Right" Tag="BU" Click="RunBatch_OnClick" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Button Style="{StaticResource B.IconTrash}" Content="&#xE74D;"
+                                                ToolTip="Eingabe leeren" Tag="BU" Click="ClearBatchInput_OnClick"
+                                                Margin="0,0,8,0" />
+                                        <Button Content="Ausführen" Style="{StaticResource B.Button}"
+                                                Tag="BU" Click="RunBatch_OnClick" />
+                                    </StackPanel>
                                 </Grid>
                                 <ItemsControl x:Name="BuResults" ItemTemplate="{StaticResource B.ResultTemplate}"
                                               Margin="0,8,0,0" />
@@ -190,8 +221,13 @@
                                 <Grid Margin="0,8,0,0">
                                     <TextBlock x:Name="BiStatus" Foreground="{StaticResource B.TextSubtle}"
                                                FontSize="11" VerticalAlignment="Center" />
-                                    <Button Content="Ausführen" Style="{StaticResource B.Button}"
-                                            HorizontalAlignment="Right" Tag="BI" Click="RunBatch_OnClick" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Button Style="{StaticResource B.IconTrash}" Content="&#xE74D;"
+                                                ToolTip="Eingabe leeren" Tag="BI" Click="ClearBatchInput_OnClick"
+                                                Margin="0,0,8,0" />
+                                        <Button Content="Ausführen" Style="{StaticResource B.Button}"
+                                                Tag="BI" Click="RunBatch_OnClick" />
+                                    </StackPanel>
                                 </Grid>
                                 <ItemsControl x:Name="BiResults" ItemTemplate="{StaticResource B.ResultTemplate}"
                                               Margin="0,8,0,0" />
@@ -211,8 +247,13 @@
                                 <Grid Margin="0,8,0,0">
                                     <TextBlock x:Name="LbStatus" Foreground="{StaticResource B.TextSubtle}"
                                                FontSize="11" VerticalAlignment="Center" />
-                                    <Button Content="Ausführen" Style="{StaticResource B.Button}"
-                                            HorizontalAlignment="Right" Tag="LB" Click="RunBatch_OnClick" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Button Style="{StaticResource B.IconTrash}" Content="&#xE74D;"
+                                                ToolTip="Eingabe leeren" Tag="LB" Click="ClearBatchInput_OnClick"
+                                                Margin="0,0,8,0" />
+                                        <Button Content="Ausführen" Style="{StaticResource B.Button}"
+                                                Tag="LB" Click="RunBatch_OnClick" />
+                                    </StackPanel>
                                 </Grid>
                                 <ItemsControl x:Name="LbResults" ItemTemplate="{StaticResource B.ResultTemplate}"
                                               Margin="0,8,0,0" />

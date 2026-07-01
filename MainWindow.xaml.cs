@@ -779,6 +779,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         CurrentListParticipantsListBox.Items.Refresh();
         SearchResultsListBox.Items.Refresh();
         RefreshDetailPanel();
+        // Hinweis-Punkte auf der Scola-Seite in Echtzeit mitziehen.
+        ScolaPanel.RefreshHintsForDocument(documentPath);
         UpdateStatus($"Hinweise gespeichert: {entry.DisplayName}");
     }
 

@@ -257,6 +257,26 @@ public partial class ScolaPanel : UserControl
         TrayChanged?.Invoke(this, EventArgs.Empty);
     }
 
+    /// <summary>
+    /// Aktualisiert die farbigen Hinweis-Punkte der Tray-Kacheln fuer eine Akte,
+    /// wenn deren Hinweise auf der Acta-Seite geaendert wurden (Echtzeit-Sync).
+    /// </summary>
+    public void RefreshHintsForDocument(string? documentPath)
+    {
+        if (string.IsNullOrWhiteSpace(documentPath))
+        {
+            return;
+        }
+
+        foreach (var participant in _tray)
+        {
+            if (string.Equals(participant.DocumentPath, documentPath, StringComparison.OrdinalIgnoreCase))
+            {
+                participant.ActiveHints = _import.LoadHints(documentPath);
+            }
+        }
+    }
+
     private void SortTrayByName()
     {
         var sorted = _tray.OrderBy(p => p.FullName, StringComparer.CurrentCultureIgnoreCase).ToList();
@@ -296,6 +316,9 @@ public partial class ScolaPanel : UserControl
 
             UpdateTrayStatus();
             TrayChanged?.Invoke(this, EventArgs.Empty);
+
+            // Sobald die TN unten erscheinen, das Import-Fenster automatisch einklappen.
+            ImportToggle.IsChecked = false;
         }
         catch (Exception ex)
         {
