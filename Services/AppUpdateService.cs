@@ -10,8 +10,8 @@ namespace XHub.Services;
 public sealed class AppUpdateService
 {
     private const string Owner = "subsudo";
-    private const string Repository = "acta";
-    private const string ReleaseAssetName = "Acta.exe";
+    private const string Repository = "Aula";
+    private const string ReleaseAssetName = "Aula.exe";
     private const string EmbeddedUpdaterResourceName = "XHub.Updater.ActaUpdater.exe";
     private static readonly TimeSpan UpdateCheckInterval = TimeSpan.FromHours(24);
     private static readonly TimeSpan SnoozeDuration = TimeSpan.FromDays(7);

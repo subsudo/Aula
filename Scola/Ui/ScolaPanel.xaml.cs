@@ -29,12 +29,15 @@ public partial class ScolaPanel : UserControl
 
     private void ScolaPanel_OnLoaded(object sender, RoutedEventArgs e)
     {
+#if DEBUG
         if (App.Config?.EnableDummyParticipants == true && _tray.Count == 0)
         {
             SeedDummyParticipants();
         }
+#endif
     }
 
+#if DEBUG
     private void SeedDummyParticipants()
     {
         _tray.Add(MakeDummy("Mustermann, Maximilian", "MaMu", true, ("#3CB371", "Anwesenheit i.O."), ("#D17878", "Offen")));
@@ -62,6 +65,7 @@ public partial class ScolaPanel : UserControl
                 .ToList()
         };
     }
+#endif
 
     /// <summary>Wird ausgeloest, wenn der Nutzer den Batch-Umschalter oben betaetigt.</summary>
     public event EventHandler? BatchToggleRequested;
@@ -191,6 +195,15 @@ public partial class ScolaPanel : UserControl
     }
 
     private void Presence_OnChanged(object sender, RoutedEventArgs e) => UpdateTrayStatus();
+
+    private void ClearImport_OnClick(object sender, RoutedEventArgs e) => ImportInput.Clear();
+
+    private void ClearTray_OnClick(object sender, RoutedEventArgs e)
+    {
+        _tray.Clear();
+        UpdateTrayStatus();
+        TrayChanged?.Invoke(this, EventArgs.Empty);
+    }
 
     private void UpdateTrayStatus()
     {

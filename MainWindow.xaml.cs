@@ -118,11 +118,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         Title = $"Aula v{App.DisplayVersion}";
         UpdateStatus("Bereit.");
         UpdatePhotoToggleGlyph();
+        _appUpdateService.TryCleanupSuccessfulUpdateArtifactsOnStartup();
 
-        // Aula: KEIN Online-Update-Check (das wuerde Actas Updater/Release melden – falsche App).
         Loaded += async (_, _) => await RefreshIndexAsync(false);
+        Loaded += async (_, _) => await BeginStartupUpdateCheckAsync();
         Loaded += (_, _) => UpdateLayoutAlignment();
+        Loaded += (_, _) => AlignTopBarToContent();
         SizeChanged += (_, _) => UpdateLayoutAlignment();
+        LayoutUpdated += (_, _) => AlignTopBarToContent();
         LocationChanged += (_, _) => RefreshSearchResultsPopupPlacement();
         StateChanged += (_, _) => RefreshSearchResultsPopupPlacement();
         MainAreaBorder.SizeChanged += (_, _) => UpdateLayoutAlignment();
@@ -163,6 +166,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             UpdateStatus("Teilnehmenden-Index wird aktualisiert ...");
             var result = await _indexService.RebuildAsync();
             _mainIndexEntries = result.Entries;
+#if DEBUG
+            if (App.Config.EnableDummyParticipants)
+            {
+                var withDummies = new List<ParticipantIndexEntry>(_mainIndexEntries);
+                withDummies.AddRange(DebugDummies.CreateEntries());
+                _mainIndexEntries = withDummies;
+            }
+#endif
             RefreshParticipantHintsForEntries(_mainIndexEntries);
             UpdateArchiveAvailability();
             RebuildCombinedIndex();
@@ -1187,6 +1198,103 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         _isListPanelOpen = !_isListPanelOpen;
         UpdateListPanelState();
+        AdjustWindowWidthForList(_isListPanelOpen);
+    }
+
+    private double _alignSearchLeft = double.NaN;
+    private double _alignSearchWidth = double.NaN;
+    private double _alignTogLeft = double.NaN;
+
+    /// <summary>
+    /// Richtet ☰ und Suchfeld zur Laufzeit exakt an den echten Positionen der Kacheln
+    /// darunter aus (Listen-Kachel bzw. Temporaere-Liste-Kachel) – unabhaengig von den
+    /// unterschiedlichen Raendern von Topbar und Inhalt. Laeuft bei jeder Layout-Aenderung,
+    /// ein Wert-Guard verhindert Endlosschleifen.
+    /// </summary>
+    private void AlignTopBarToContent()
+    {
+        if (!IsLoaded || MainAreaBorder is null || ToggleListPanelButton is null ||
+            TopBarSearchArea is null || MainAreaBorder.ActualWidth <= 0)
+        {
+            return;
+        }
+
+        try
+        {
+            var topBarLeft = TopBarLayoutGrid.TransformToVisual(this).Transform(new Point(0, 0)).X;
+            var mainLeft = MainAreaBorder.TransformToVisual(this).Transform(new Point(0, 0)).X;
+            var mainWidth = MainAreaBorder.ActualWidth;
+            var togWidth = ToggleListPanelButton.ActualWidth > 0 ? ToggleListPanelButton.ActualWidth : 34;
+
+            double searchLeft, searchWidth, togLeft;
+            if (_isListPanelOpen && ListPanelBorder.Visibility == Visibility.Visible && ListPanelBorder.ActualWidth > 0)
+            {
+                var listLeft = ListPanelBorder.TransformToVisual(this).Transform(new Point(0, 0)).X;
+                togLeft = listLeft + ListPanelBorder.ActualWidth - togWidth - topBarLeft;
+                searchLeft = mainLeft - topBarLeft;
+                searchWidth = mainWidth;
+            }
+            else
+            {
+                const double gap = 16;
+                togLeft = mainLeft - topBarLeft;
+                searchLeft = mainLeft - topBarLeft + togWidth + gap;
+                searchWidth = Math.Max(120, mainWidth - togWidth - gap);
+            }
+
+            if (Math.Abs(searchLeft - _alignSearchLeft) < 0.5 &&
+                Math.Abs(searchWidth - _alignSearchWidth) < 0.5 &&
+                Math.Abs(togLeft - _alignTogLeft) < 0.5)
+            {
+                return;
+            }
+
+            _alignSearchLeft = searchLeft;
+            _alignSearchWidth = searchWidth;
+            _alignTogLeft = togLeft;
+
+            ToggleListPanelButton.Margin = new Thickness(togLeft, 0, 0, 0);
+            TopBarSearchArea.Margin = new Thickness(searchLeft, 0, 0, 0);
+            TopBarSearchArea.Width = searchWidth;
+        }
+        catch
+        {
+            // Layout noch nicht bereit – beim naechsten LayoutUpdated erneut.
+        }
+    }
+
+    private double? _widthBeforeListExpanded;
+
+    /// <summary>
+    /// Verbreitert/verschmaelert das Fenster beim Auf-/Zuklappen des Listen-Panels
+    /// (wie der Batch-Bereich rechts). Nur im normalen Fensterzustand.
+    /// </summary>
+    private void AdjustWindowWidthForList(bool open)
+    {
+        if (WindowState != WindowState.Normal)
+        {
+            return;
+        }
+
+        var delta = GetListPanelExpandedWidth() + 6;
+        var workArea = SystemParameters.WorkArea;
+        if (!open)
+        {
+            _widthBeforeListExpanded = Width;
+            Width = Math.Max(MinWidth, Width - delta);
+        }
+        else
+        {
+            Width = _widthBeforeListExpanded is double previous
+                ? Math.Min(previous, workArea.Width)
+                : Math.Min(Width + delta, workArea.Width);
+            if (Left + Width > workArea.Right)
+            {
+                Left = Math.Max(workArea.Left, workArea.Right - Width);
+            }
+
+            _widthBeforeListExpanded = null;
+        }
     }
 
     private void ToggleDetailPanelButton_OnClick(object sender, RoutedEventArgs e)
@@ -1788,6 +1896,13 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void EnrichParticipantSchedule(ParticipantIndexEntry entry)
     {
+#if DEBUG
+        if (DebugDummies.IsDummy(entry))
+        {
+            entry.MiniSchedule = DebugDummies.CreateSchedule();
+            return;
+        }
+#endif
         if (entry.IsArchived || !App.UserPrefs.ShowMiniSchedule)
         {
             entry.MiniSchedule = new ParticipantMiniScheduleSummary
@@ -2216,7 +2331,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         var folderPath = !string.IsNullOrWhiteSpace(participant.SelectedFolderPath)
             ? participant.SelectedFolderPath
             : participant.MatchedFolderPath;
-        var entry = FindIndexEntryByPath(folderPath, participant.DocumentPath);
+        var entry = FindIndexEntryByPath(folderPath, participant.DocumentPath)
+            ?? _indexEntries.FirstOrDefault(candidate =>
+                string.Equals(candidate.DisplayName, participant.FullName, StringComparison.OrdinalIgnoreCase));
         if (entry is null)
         {
             return;

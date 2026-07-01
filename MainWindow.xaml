@@ -23,7 +23,7 @@
         <Style TargetType="Border" x:Key="PanelBorderStyle">
             <Setter Property="Background" Value="{DynamicResource Brush.PanelBg}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="12" />
             <Setter Property="Padding" Value="12" />
         </Style>
@@ -388,9 +388,9 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
                         <Border x:Name="ItemBorder"
-                                Background="{DynamicResource Brush.CardBg}"
+                                Background="{DynamicResource Brush.SoftSurface}"
                                 BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="1"
+                                BorderThickness="0"
                                 CornerRadius="10"
                                 Padding="{DynamicResource Ui.Padding.ParticipantItem}">
                             <ContentPresenter />
@@ -408,9 +408,9 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
                         <Border x:Name="ItemBorder"
-                                Background="{DynamicResource Brush.CardBg}"
+                                Background="{DynamicResource Brush.SoftSurface}"
                                 BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="1"
+                                BorderThickness="0"
                                 CornerRadius="10"
                                 Padding="{DynamicResource Ui.Padding.WorkingItem}">
                             <ContentPresenter />
@@ -449,21 +449,17 @@
                 BorderThickness="0"
                 Padding="14,4,12,10">
             <Grid x:Name="TopBarLayoutGrid">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0"
-                        x:Name="ToggleListPanelButton"
+                <Button x:Name="ToggleListPanelButton"
                         Style="{StaticResource IconButtonStyle}"
                         Content="☰"
+                        Width="34"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
                         ToolTip="Listen ein-/ausblenden"
-                        Click="ToggleListPanelButton_OnClick"
-                        Margin="0,0,8,0" />
+                        Click="ToggleListPanelButton_OnClick" />
 
-                <Grid x:Name="TopBarSearchArea" Grid.Column="1" Margin="0,0,8,0">
+                <Grid x:Name="TopBarSearchArea" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <TextBox x:Name="SearchTextBox"
                              Style="{StaticResource SearchTextBoxStyle}"
                              VerticalAlignment="Center"
@@ -503,13 +499,17 @@
                            AllowsTransparency="True"
                            StaysOpen="True"
                            VerticalOffset="4">
-                        <Border Width="{Binding ElementName=SearchTextBox, Path=ActualWidth}"
+                        <Border Width="430"
                                 Background="{DynamicResource Brush.PanelBg}"
                                 BorderBrush="{DynamicResource Brush.Border}"
                                 BorderThickness="1"
                                 CornerRadius="12"
                                 Padding="6"
                                 MaxHeight="400">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="14" ShadowDepth="2" Direction="270"
+                                                  Opacity="0.12" Color="#1E2530" />
+                            </Border.Effect>
                             <ListBox x:Name="SearchResultsListBox"
                                      BorderThickness="0"
                                      Background="Transparent"
@@ -522,70 +522,28 @@
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
-                                            <Grid VerticalAlignment="Center">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="40" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-                                                <Border Grid.Column="0"
-                                                        Style="{StaticResource StatusTagBadgeStyle}"
-                                                        HorizontalAlignment="Center"
-                                                        VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding StatusTag}" Style="{StaticResource StatusTagTextStyle}" />
-                                                </Border>
-                                                <Grid Grid.Column="1"
-                                                      Style="{StaticResource StatusTextColumnStyle}"
-                                                      VerticalAlignment="Center">
-                                                    <StackPanel VerticalAlignment="Center"
-                                                                Style="{StaticResource ParticipantTextWithInitialsPanelStyle}">
-                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                            <TextBlock Text="{Binding Initials}"
-                                                                       Style="{StaticResource ParticipantInitialsTextStyle}" />
-                                                            <ItemsControl ItemsSource="{Binding HintMarkers}"
-                                                                          Style="{StaticResource ParticipantHintMarkerItemsStyle}">
-                                                                <ItemsControl.ItemsPanel>
-                                                                    <ItemsPanelTemplate>
-                                                                        <StackPanel Orientation="Horizontal" />
-                                                                    </ItemsPanelTemplate>
-                                                                </ItemsControl.ItemsPanel>
-                                                                <ItemsControl.ItemTemplate>
-                                                                    <DataTemplate>
-                                                                        <Ellipse Width="6"
-                                                                                 Height="6"
-                                                                                 Margin="0,0,4,0"
-                                                                                 Fill="{Binding MarkerColor}"
-                                                                                 ToolTip="{Binding Text}" />
-                                                                    </DataTemplate>
-                                                                </ItemsControl.ItemTemplate>
-                                                            </ItemsControl>
-                                                        </StackPanel>
-                                                        <TextBlock Text="{Binding DisplayName}"
-                                                                   Style="{StaticResource ParticipantNameWithInitialsTextStyle}" />
-                                                    </StackPanel>
-                                                    <StackPanel Style="{StaticResource ParticipantTextWithoutInitialsPanelStyle}">
-                                                        <TextBlock Text="{Binding DisplayName}"
-                                                                   Style="{StaticResource ParticipantNameTextStyle}"
-                                                                   VerticalAlignment="Center" />
-                                                        <ItemsControl ItemsSource="{Binding HintMarkers}"
-                                                                      Style="{StaticResource ParticipantHintMarkerItemsStyle}">
-                                                            <ItemsControl.ItemsPanel>
-                                                                <ItemsPanelTemplate>
-                                                                    <StackPanel Orientation="Horizontal" />
-                                                                </ItemsPanelTemplate>
-                                                            </ItemsControl.ItemsPanel>
-                                                            <ItemsControl.ItemTemplate>
-                                                                <DataTemplate>
-                                                                    <Ellipse Width="6"
-                                                                             Height="6"
-                                                                             Margin="0,0,4,0"
-                                                                             Fill="{Binding MarkerColor}"
-                                                                             ToolTip="{Binding Text}" />
-                                                                </DataTemplate>
-                                                            </ItemsControl.ItemTemplate>
-                                                        </ItemsControl>
-                                                    </StackPanel>
-                                                </Grid>
-                                            </Grid>
+                                            <StackPanel VerticalAlignment="Center" Margin="2,0,0,0">
+                                                <TextBlock Text="{Binding DisplayName}" FontSize="12.5" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Brush.PrimaryText}"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <StackPanel Orientation="Horizontal" Margin="0,1,0,0">
+                                                    <TextBlock Text="{Binding Initials}" FontSize="10"
+                                                               Foreground="{DynamicResource Brush.SubtleText}" VerticalAlignment="Center" />
+                                                    <ItemsControl ItemsSource="{Binding HintMarkers}" Margin="7,0,0,0" VerticalAlignment="Center">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <StackPanel Orientation="Horizontal" />
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Ellipse Width="8" Height="8" Margin="0,0,3,0"
+                                                                         Fill="{Binding MarkerColor}" ToolTip="{Binding Text}" />
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </StackPanel>
+                                            </StackPanel>
                                             <WrapPanel Grid.Column="1"
                                                        VerticalAlignment="Center"
                                                        HorizontalAlignment="Right">
@@ -637,7 +595,7 @@
                     </Popup>
                 </Grid>
 
-                <StackPanel x:Name="TopBarActionsPanel" Grid.Column="2" Orientation="Horizontal">
+                <StackPanel x:Name="TopBarActionsPanel" HorizontalAlignment="Right" Orientation="Horizontal">
                     <Button x:Name="DecreaseUiScaleButton"
                             Style="{StaticResource ScaleAdjustButtonStyle}"
                             Content="−"
@@ -869,7 +827,7 @@
                         Grid.Row="1"
                         Background="{DynamicResource Brush.PanelBg}"
                         BorderBrush="{DynamicResource Brush.Border}"
-                        BorderThickness="1"
+                        BorderThickness="0"
                         CornerRadius="12"
                         Padding="10">
                     <Grid>
@@ -1082,10 +1040,11 @@
                                 Style="{StaticResource GhostButtonStyle}"
                                 FontFamily="Segoe MDL2 Assets"
                                 FontSize="13"
+                                Foreground="{DynamicResource Brush.SubtleText}"
                                 Width="{DynamicResource Ui.Size.IconButton}"
                                 Height="{DynamicResource Ui.Size.IconButton}"
                                 Padding="0"
-                                Margin="0,0,4,0"
+                                Margin="0,2,4,0"
                                 ToolTip="Foto ein-/ausblenden"
                                 Click="TogglePhotoButton_OnClick" />
                         <Button Grid.Column="2"
@@ -1111,6 +1070,7 @@
                           Background="Transparent" />
 
             <scola:ScolaPanel x:Name="ScolaPanel" Grid.Column="8"
+                              Margin="6,0,0,0"
                               BatchToggleRequested="ScolaPanel_OnBatchToggleRequested"
                               ParticipantActivated="ScolaPanel_OnParticipantActivated"
                               TrayChanged="ScolaPanel_OnTrayChanged"

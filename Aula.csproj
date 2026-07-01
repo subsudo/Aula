@@ -31,10 +31,28 @@
     <Resource Include="Assets\Reload.secondary.png" />
   </ItemGroup>
 
-  <!--
-    Hinweis: Die eingebettete Updater-Logik (BuildEmbeddedUpdater + ActaUpdater.exe)
-    aus Acta wurde fuer Aula v0.1 bewusst weggelassen. Der App-Start braucht sie
-    nicht; nur das tatsaechliche Installieren eines Updates. Wird spaeter
-    nachgezogen, falls Aula einen eigenen Updater bekommen soll.
-  -->
+  <ItemGroup>
+    <Compile Remove="ActaUpdater\**\*.cs" />
+    <EmbeddedResource Remove="ActaUpdater\**\*" />
+    <Page Remove="ActaUpdater\**\*" />
+    <None Remove="ActaUpdater\**\*" />
+    <EmbeddedResource Include="$(MSBuildProjectDirectory)\obj\$(Configuration)\net8.0-windows\win-x64\EmbeddedUpdater\ActaUpdater.exe">
+      <LogicalName>XHub.Updater.ActaUpdater.exe</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <Target Name="BuildEmbeddedUpdater" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <EmbeddedUpdaterResourceDir>$(MSBuildProjectDirectory)\obj\$(Configuration)\net8.0-windows\win-x64\EmbeddedUpdater\</EmbeddedUpdaterResourceDir>
+      <EmbeddedUpdaterPublishDir>$(MSBuildProjectDirectory)\obj\$(Configuration)\net8.0-windows\win-x64\EmbeddedUpdaterPublish\</EmbeddedUpdaterPublishDir>
+    </PropertyGroup>
+    <MakeDir Directories="$(EmbeddedUpdaterResourceDir)" />
+    <MakeDir Directories="$(EmbeddedUpdaterPublishDir)" />
+    <MSBuild Projects="$(MSBuildProjectDirectory)\ActaUpdater\ActaUpdater.csproj"
+             Targets="Restore;Publish"
+             Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;PublishSingleFile=true;SelfContained=true;EnableCompressionInSingleFile=true;PublishTrimmed=false;PublishDir=$(EmbeddedUpdaterPublishDir)" />
+    <Copy SourceFiles="$(EmbeddedUpdaterPublishDir)ActaUpdater.exe"
+          DestinationFiles="$(EmbeddedUpdaterResourceDir)ActaUpdater.exe"
+          SkipUnchangedFiles="false" />
+  </Target>
 </Project>

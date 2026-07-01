@@ -24,11 +24,10 @@
         <SolidColorBrush x:Key="L.BtnBorder" Color="#D5DBE3" />
         <SolidColorBrush x:Key="L.ToggleActive" Color="#DCE1E8" />
 
-        <!-- Kompakte TN-Kachel (grau, Buttons weiss) -->
+        <!-- Kompakte TN-Kachel (grau, Buttons weiss, ohne Umrandung) -->
         <Style x:Key="L.Chip" TargetType="Border">
             <Setter Property="Background" Value="#ECEFF3" />
-            <Setter Property="BorderBrush" Value="{StaticResource L.Border}" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Padding" Value="7,5" />
             <Setter Property="Margin" Value="0,0,0,5" />
@@ -90,6 +89,34 @@
             </Setter>
         </Style>
 
+        <!-- Papierkorb-Icon-Button -->
+        <Style x:Key="L.IconTrash" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{StaticResource L.TextSubtle}" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bg" Background="Transparent" CornerRadius="7">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              TextBlock.Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{StaticResource L.Hover}" />
+                                <Setter Property="Foreground" Value="#D17878" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Primaerer Importieren-Button -->
         <Style x:Key="L.PrimaryButton" TargetType="Button">
             <Setter Property="Foreground" Value="{StaticResource L.BtnText}" />
@@ -97,14 +124,15 @@
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="FontSize" Value="10" />
             <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="MinWidth" Value="112" />
-            <Setter Property="Padding" Value="18,10" />
+            <Setter Property="MinWidth" Value="92" />
+            <Setter Property="Padding" Value="16,8" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Bg" Background="{TemplateBinding Background}"
                                 BorderBrush="{StaticResource L.BtnBorder}" BorderThickness="1" CornerRadius="8">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -295,8 +323,13 @@
                                  AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
                                  Background="#FFFFFF" Foreground="{StaticResource L.Text}"
                                  BorderBrush="{StaticResource L.Border}" BorderThickness="1" Padding="8" />
-                        <Button x:Name="ImportButton" Content="Importieren" Style="{StaticResource L.PrimaryButton}"
-                                HorizontalAlignment="Right" Margin="0,8,0,0" Click="ImportButton_OnClick" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                            <Button x:Name="ClearImportButton" Style="{StaticResource L.IconTrash}"
+                                    Content="&#xE74D;" ToolTip="Eingabe leeren"
+                                    Margin="0,0,8,0" Click="ClearImport_OnClick" />
+                            <Button x:Name="ImportButton" Content="Importieren" Style="{StaticResource L.PrimaryButton}"
+                                    Click="ImportButton_OnClick" />
+                        </StackPanel>
                     </StackPanel>
                 </Border>
             </StackPanel>
@@ -306,11 +339,20 @@
                 <ItemsControl x:Name="TrayItems" ItemTemplate="{StaticResource L.ChipTemplate}" />
             </ScrollViewer>
 
-            <!-- Status / Auswertung -->
+            <!-- Status / Auswertung + Papierkorb (Liste leeren) -->
             <Border Grid.Row="2" BorderBrush="{StaticResource L.Border}" BorderThickness="0,1,0,0"
-                    Padding="2,6,2,0" Margin="0,4,0,0">
-                <TextBlock x:Name="StatusText" Text="Auswertung: 0 Einträge (0 anwesend, 0 abwesend)"
-                           FontSize="11" Foreground="{StaticResource L.TextSubtle}" />
+                    Padding="2,4,2,0" Margin="0,4,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="StatusText" Text="Auswertung: 0 Einträge (0 anwesend, 0 abwesend)"
+                               FontSize="11" Foreground="{StaticResource L.TextSubtle}" VerticalAlignment="Center" />
+                    <Button x:Name="ClearTrayButton" Grid.Column="1" Style="{StaticResource L.IconTrash}"
+                            Content="&#xE74D;" ToolTip="Alle Teilnehmer aus der Liste entfernen"
+                            Click="ClearTray_OnClick" />
+                </Grid>
             </Border>
         </Grid>
     </Border>
