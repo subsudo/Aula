@@ -317,41 +317,7 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" Style="{StaticResource TileCardStyle}">
-                    <StackPanel>
-                        <TextBlock Text="DARSTELLUNG"
-                                   Style="{StaticResource SectionEyebrowStyle}"
-                                   Margin="0,0,0,10" />
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0" MinHeight="60">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="Dunkelmodus"
-                                           Style="{StaticResource FieldLabelStyle}"
-                                           Margin="0,0,0,8" />
-                                <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Bottom">
-                                    <CheckBox x:Name="ThemeToggleCheckBox"
-                                              Style="{StaticResource ToggleSwitchStyle}"
-                                              Checked="ThemeToggleCheckBox_OnChanged"
-                                              Unchecked="ThemeToggleCheckBox_OnChanged" />
-                                    <TextBlock x:Name="ThemeModeTextBlock"
-                                               Margin="8,0,0,0"
-                                               VerticalAlignment="Center"
-                                               FontWeight="SemiBold"
-                                               Foreground="{DynamicResource Brush.SecondaryText}" />
-                                </StackPanel>
-                            </Grid>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
-                <Border Grid.Column="2" Style="{StaticResource TileCardStyle}">
+                <Border Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource TileCardStyle}">
                     <StackPanel>
                         <TextBlock Text="EINTRÄGE"
                                    Style="{StaticResource SectionEyebrowStyle}"

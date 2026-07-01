@@ -120,8 +120,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="Bg" Background="Transparent"
-                                BorderBrush="{StaticResource B.BtnBorder}" BorderThickness="1" CornerRadius="9">
+                        <Border x:Name="Bg" Background="Transparent" CornerRadius="7">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
                                               TextBlock.Foreground="{TemplateBinding Foreground}" />
                         </Border>

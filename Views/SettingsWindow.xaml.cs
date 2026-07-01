@@ -10,12 +10,10 @@ namespace XHub.Views;
 
 public partial class SettingsWindow : Window
 {
-    private readonly bool _initialIsDarkTheme;
     private readonly bool _showStatusTags;
     private readonly bool _showParticipantPhoto;
     private readonly bool _showMiniSchedule;
     private readonly bool _showNotesPanel;
-    private bool _persistThemeChange;
     private SettingsWindowAction _requestedAction = SettingsWindowAction.Save;
 
     protected override void OnSourceInitialized(EventArgs e)
@@ -29,7 +27,6 @@ public partial class SettingsWindow : Window
         InitializeComponent();
         Loaded += SettingsWindow_OnLoaded;
 
-        _initialIsDarkTheme = prefs.IsDarkTheme;
         _showStatusTags = config.ShowStatusTags;
         _showParticipantPhoto = config.ShowParticipantPhoto;
         _showMiniSchedule = prefs.ShowMiniSchedule;
@@ -43,8 +40,6 @@ public partial class SettingsWindow : Window
         ExitPathTextBox.Text = config.ExitBasePath;
         SchedulePathTextBox.Text = config.ScheduleRootPath;
 
-        ThemeToggleCheckBox.IsChecked = prefs.IsDarkTheme;
-
         FolderActionCheckBox.IsChecked = config.VisibleQuickActions.Contains(QuickActionKeys.Folder, StringComparer.OrdinalIgnoreCase);
         DocumentActionCheckBox.IsChecked = config.VisibleQuickActions.Contains(QuickActionKeys.Document, StringComparer.OrdinalIgnoreCase);
         BuActionCheckBox.IsChecked = config.VisibleQuickActions.Contains(QuickActionKeys.Bu, StringComparer.OrdinalIgnoreCase);
@@ -57,8 +52,6 @@ public partial class SettingsWindow : Window
         EntryLbActionCheckBox.IsChecked = config.VisibleQuickActions.Contains(QuickActionKeys.EntryLb, StringComparer.OrdinalIgnoreCase);
         AutoPrefillEntryCheckBox.IsChecked = prefs.AutoPrefillOnEmptyClipboard;
         DefaultEntryInitialsTextBox.Text = prefs.DefaultEntryInitials ?? string.Empty;
-
-        UpdateThemePreview();
     }
 
     private void SettingsWindow_OnLoaded(object sender, RoutedEventArgs e)
@@ -79,7 +72,7 @@ public partial class SettingsWindow : Window
         StartPath = StartPathTextBox.Text.Trim(),
         ExitPath = ExitPathTextBox.Text.Trim(),
         SchedulePath = SchedulePathTextBox.Text.Trim(),
-        IsDarkTheme = ThemeToggleCheckBox.IsChecked == true,
+        IsDarkTheme = false,
         ShowStatusTags = _showStatusTags,
         ShowParticipantPhoto = _showParticipantPhoto,
         ShowMiniSchedule = _showMiniSchedule,
@@ -89,16 +82,6 @@ public partial class SettingsWindow : Window
         DefaultEntryInitials = DefaultEntryInitialsTextBox.Text.Trim(),
         RequestedAction = _requestedAction
     };
-
-    protected override void OnClosed(EventArgs e)
-    {
-        if (!_persistThemeChange)
-        {
-            App.ApplyTheme(_initialIsDarkTheme);
-        }
-
-        base.OnClosed(e);
-    }
 
     private List<string> GetSelectedQuickActions()
     {
@@ -118,7 +101,6 @@ public partial class SettingsWindow : Window
 
     private void SaveButton_OnClick(object sender, RoutedEventArgs e)
     {
-        _persistThemeChange = true;
         _requestedAction = SettingsWindowAction.Save;
         DialogResult = true;
     }
@@ -159,18 +141,6 @@ public partial class SettingsWindow : Window
     private void CancelButton_OnClick(object sender, RoutedEventArgs e)
     {
         DialogResult = false;
-    }
-
-    private void ThemeToggleCheckBox_OnChanged(object sender, RoutedEventArgs e)
-    {
-        UpdateThemePreview();
-    }
-
-    private void UpdateThemePreview()
-    {
-        var isDark = ThemeToggleCheckBox.IsChecked == true;
-        ThemeModeTextBlock.Text = isDark ? "Dunkel" : "Hell";
-        App.ApplyTheme(isDark);
     }
 
 }

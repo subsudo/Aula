@@ -120,7 +120,7 @@ public partial class App : Application
         var prefsService = new UserPrefsService(UserPrefsPath, UserPrefsBackupPath);
         UserPrefs = prefsService.Load();
         NormalizeUserPrefs(UserPrefs, hasExistingUserPrefs);
-        ApplyTheme(UserPrefs.IsDarkTheme);
+        ApplyTheme(false);
         ApplyUiScale(UserPrefs.UiScaleLevel);
         TryPersistNormalizedUserPrefs(prefsService);
         WordStaHost = new WordStaHost();
@@ -196,6 +196,8 @@ public partial class App : Application
 
     public static void ApplyTheme(bool isDark)
     {
+        // Dunkelmodus entfernt: die App laeuft ausschliesslich im hellen Design.
+        isDark = false;
         UserPrefs.IsDarkTheme = isDark;
         var resources = Current.Resources;
 

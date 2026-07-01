@@ -1753,19 +1753,19 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             // Ctrl-Klick auf eine Eintrag-Aktion = nur zur Stelle navigieren statt eintragen
             // (vereinheitlicht Scolas isNavigationOnly-Geste).
             case QuickActionKeys.EntryBu:
-                if (isNavigationOnly) OpenBookmark(entry, App.Config.WordBuBookmarkName);
+                if (isNavigationOnly) OpenStructuredEntryTable(entry, StructuredEntryTarget.Bu);
                 else InsertStructuredEntry(entry, StructuredEntryTarget.Bu);
                 break;
             case QuickActionKeys.EntryBi:
-                if (isNavigationOnly) OpenBookmark(entry, App.Config.WordBiBookmarkName);
+                if (isNavigationOnly) OpenStructuredEntryTable(entry, StructuredEntryTarget.Bi);
                 else InsertStructuredEntry(entry, StructuredEntryTarget.Bi);
                 break;
             case QuickActionKeys.EntryBe:
-                if (isNavigationOnly) OpenBookmark(entry, App.Config.WordBeBookmarkName);
+                if (isNavigationOnly) OpenStructuredEntryTable(entry, StructuredEntryTarget.Be);
                 else InsertStructuredEntry(entry, StructuredEntryTarget.Be);
                 break;
             case QuickActionKeys.EntryLb:
-                if (isNavigationOnly) OpenBookmark(entry, App.Config.WordLbBookmarkName);
+                if (isNavigationOnly) OpenStructuredEntryTable(entry, StructuredEntryTarget.Lb);
                 else InsertStructuredEntry(entry, StructuredEntryTarget.Lb);
                 break;
         }
@@ -1797,6 +1797,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         TryWordAction(entry, path => App.WordStaHost.RunAsync(
             $"OpenDocumentAtBookmark:{bookmark}",
             service => service.OpenDocumentAtBookmark(path, bookmark)));
+
+    // Ctrl-Klick auf eine Eintrag-Aktion: nur zur strukturierten Eintrags-Tabelle
+    // springen (die Tabelle selbst ist eine Bookmark, z. B. BU_BILDUNG_TABELLE),
+    // ohne etwas einzutragen.
+    private void OpenStructuredEntryTable(ParticipantIndexEntry entry, StructuredEntryTarget target) =>
+        OpenBookmark(entry, target.TableBookmarkName);
 
     private async void InsertStructuredEntry(ParticipantIndexEntry entry, StructuredEntryTarget target)
     {
