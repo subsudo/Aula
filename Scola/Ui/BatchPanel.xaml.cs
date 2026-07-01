@@ -79,13 +79,15 @@ public partial class BatchPanel : UserControl
             return;
         }
 
+        // Nur angehakte (anwesende) TN kommen in den Batch. Deaktivierte TN
+        // (Haken draussen) duerfen nie als aktiv gelten.
         var eligible = _participants
-            .Where(p => p.MatchStatus == VM.MatchStatus.Found && !string.IsNullOrWhiteSpace(p.DocumentPath))
+            .Where(p => p.IsPresent && p.MatchStatus == VM.MatchStatus.Found && !string.IsNullOrWhiteSpace(p.DocumentPath))
             .ToList();
 
         if (eligible.Count == 0)
         {
-            status.Text = "Keine TN mit Akte im Tray.";
+            status.Text = "Keine angehakten (anwesenden) TN mit Akte im Tray.";
             return;
         }
 

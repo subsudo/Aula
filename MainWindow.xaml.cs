@@ -2358,6 +2358,15 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ScolaPanel_OnQuickActionRequested(object? sender, XHub.Scola.TrayQuickActionEventArgs e)
     {
+        // Schreibende Aktionen (Eintraege) duerfen bei abwesenden TN nicht ausgefuehrt
+        // werden – deaktivierte TN gelten nie als aktiv. Ansehen (Ordner/Akte) bleibt erlaubt.
+        var isEntryAction = e.ActionKey.StartsWith("entry_", StringComparison.OrdinalIgnoreCase);
+        if (isEntryAction && !e.IsNavigationOnly && !e.Participant.IsPresent)
+        {
+            UpdateStatus($"{e.Participant.FullName} ist abwesend – Eintrag gesperrt.");
+            return;
+        }
+
         var folderPath = !string.IsNullOrWhiteSpace(e.Participant.SelectedFolderPath)
             ? e.Participant.SelectedFolderPath
             : e.Participant.MatchedFolderPath;
