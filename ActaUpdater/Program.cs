@@ -42,7 +42,7 @@ internal static class Program
             Log($"Updater-Fehler: {ex}");
             MessageBox.Show(
                 $"Das Update konnte nicht abgeschlossen werden.{Environment.NewLine}{Environment.NewLine}{ex.Message}",
-                "Acta Update fehlgeschlagen",
+                "Aula Update fehlgeschlagen",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
             return 1;

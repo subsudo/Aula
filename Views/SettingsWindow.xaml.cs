@@ -132,7 +132,7 @@ public partial class SettingsWindow : Window
         {
             MessageBox.Show(
                 $"Der Log-Ordner konnte nicht geöffnet werden:\n{ex.Message}",
-                "Acta",
+                "Aula",
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
         }

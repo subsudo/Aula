@@ -384,7 +384,7 @@ public sealed class AppUpdateService
 
         if (string.IsNullOrWhiteSpace(downloadUrl))
         {
-            AppLogger.Warn("Updater: Release enthaelt kein Asset 'Acta.exe'.");
+            AppLogger.Warn($"Updater: Release enthaelt kein Asset '{ReleaseAssetName}'.");
             return null;
         }
 

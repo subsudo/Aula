@@ -199,7 +199,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             UpdateStatus("Index-Aktualisierung fehlgeschlagen.");
             if (showErrorDialog)
             {
-                MessageBox.Show($"Der Index konnte nicht aktualisiert werden:\n{ex.Message}", "Acta",
+                MessageBox.Show($"Der Index konnte nicht aktualisiert werden:\n{ex.Message}", "Aula",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -900,7 +900,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             AppLogger.Error("XHub.Archive.Load", ex);
             UpdateStatus("Archiv konnte nicht geladen werden.");
-            MessageBox.Show($"Das Archiv konnte nicht geladen werden:\n{ex.Message}", "Acta",
+            MessageBox.Show($"Das Archiv konnte nicht geladen werden:\n{ex.Message}", "Aula",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
         }
         finally
@@ -928,7 +928,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             if (WordBusyGuard.IsBusy || _isRefreshing)
             {
-                AppLogger.Info("Index-Auto-Refresh verschoben, weil Acta gerade beschäftigt ist.");
+                AppLogger.Info("Index-Auto-Refresh verschoben, weil Aula gerade beschäftigt ist.");
                 return;
             }
 
@@ -1170,7 +1170,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         if (existing is not null &&
             !string.Equals(existing.Id, _loadedSavedListId, StringComparison.OrdinalIgnoreCase))
         {
-            if (MessageBox.Show($"Liste '{targetName}' überschreiben?", "Acta",
+            if (MessageBox.Show($"Liste '{targetName}' überschreiben?", "Aula",
                     MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
                 return;
         }
@@ -1492,7 +1492,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         var list = FindListById(listId);
         if (list is null) return;
 
-        if (MessageBox.Show($"Liste '{list.Name}' wirklich löschen?", "Acta",
+        if (MessageBox.Show($"Liste '{list.Name}' wirklich löschen?", "Aula",
                 MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
             return;
 
@@ -1626,13 +1626,13 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             {
                 MessageBox.Show(
                     $"Nicht zugeordnet ({result.UnmatchedLines.Count}):\n\n{string.Join("\n", result.UnmatchedLines.Take(12))}",
-                    "Acta", MessageBoxButton.OK, MessageBoxImage.Information);
+                    "Aula", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
         catch (Exception ex)
         {
             AppLogger.Error("XHub.ImportAttendance", ex);
-            MessageBox.Show($"Import fehlgeschlagen:\n{ex.Message}", "Acta",
+            MessageBox.Show($"Import fehlgeschlagen:\n{ex.Message}", "Aula",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -1640,7 +1640,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         var dialog = new SaveFileDialog
         {
-            Filter = "Acta Export (*.xhub.json)|*.xhub.json|JSON (*.json)|*.json",
+            Filter = "Aula Export (*.xhub.json)|*.xhub.json|JSON (*.json)|*.json",
             FileName = $"xhub-lists-{DateTime.Now:yyyyMMdd-HHmm}.xhub.json"
         };
         if (dialog.ShowDialog(this) != true) return;
@@ -1653,7 +1653,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         catch (Exception ex)
         {
             AppLogger.Error("XHub.Export", ex);
-            MessageBox.Show($"Export fehlgeschlagen:\n{ex.Message}", "Acta",
+            MessageBox.Show($"Export fehlgeschlagen:\n{ex.Message}", "Aula",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -1661,9 +1661,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private void ExecuteImport()
     {
         var dialog = new OpenFileDialog
-            { Filter = "Acta Export (*.xhub.json;*.json)|*.xhub.json;*.json" };
+            { Filter = "Aula Export (*.xhub.json;*.json)|*.xhub.json;*.json" };
         if (dialog.ShowDialog(this) != true) return;
-        if (MessageBox.Show("Der Import ersetzt die aktuellen lokalen Listen. Fortfahren?", "Acta",
+        if (MessageBox.Show("Der Import ersetzt die aktuellen lokalen Listen. Fortfahren?", "Aula",
                 MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
             return;
 
@@ -1684,7 +1684,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         catch (Exception ex)
         {
             AppLogger.Error("XHub.Import", ex);
-            MessageBox.Show($"Import fehlgeschlagen:\n{ex.Message}", "Acta",
+            MessageBox.Show($"Import fehlgeschlagen:\n{ex.Message}", "Aula",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -1807,7 +1807,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         if (!Directory.Exists(entry.FolderPath))
         {
-            MessageBox.Show("Der Teilnehmerordner ist nicht erreichbar.", "Acta", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Der Teilnehmerordner ist nicht erreichbar.", "Aula", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -1818,7 +1818,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         catch (Exception ex)
         {
             AppLogger.Error($"XHub.MainWindow.OpenFolder '{entry.FolderPath}'", ex);
-            MessageBox.Show("Der Teilnehmerordner konnte nicht geöffnet werden.", "Acta", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Der Teilnehmerordner konnte nicht geöffnet werden.", "Aula", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
@@ -1879,7 +1879,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             UpdateStatus($"{target.Label}: Bookmark fehlt");
             MessageBox.Show(
                 $"Der {target.Label} konnte nicht eingefügt werden.\n\nDie erwartete Textmarke '{ex.BookmarkName}' wurde in der Akte nicht gefunden.",
-                "Acta",
+                "Aula",
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
         }
@@ -1888,7 +1888,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             UpdateStatus($"{target.Label}: Tabelle ungültig");
             MessageBox.Show(
                 $"Der {target.Label} konnte nicht eingefügt werden.\n\n{ex.UserMessage}",
-                "Acta",
+                "Aula",
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
         }
@@ -1897,14 +1897,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             UpdateStatus($"{target.Label}: Akte nicht schreibbar");
             MessageBox.Show(
                 $"Die Akte von {entry.DisplayName} ist aktuell nicht schreibbar.\n\n{ex.Message}",
-                "Acta",
+                "Aula",
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
         }
         catch (Exception ex)
         {
             AppLogger.Error($"XHub.MainWindow.StructuredEntry '{entry.DisplayName}', Target='{target.Key}'", ex);
-            MessageBox.Show(ex.Message, "Acta", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, "Aula", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
@@ -1953,7 +1953,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         catch (Exception ex)
         {
             AppLogger.Error($"XHub.MainWindow.WordAction '{entry.DisplayName}'", ex);
-            MessageBox.Show(ex.Message, "Acta", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, "Aula", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
@@ -2261,6 +2261,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void MainWindow_OnClosed(object? sender, EventArgs e)
     {
+        _refreshTimer?.Stop();
+        _refreshTimer = null;
         _participantHintsRefreshTimer?.Stop();
         _participantHintsRefreshTimer = null;
         WordBusyGuard.BusyStateChanged -= WordBusyGuard_OnBusyStateChanged;

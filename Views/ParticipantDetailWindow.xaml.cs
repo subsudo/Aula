@@ -31,7 +31,7 @@ public partial class ParticipantDetailWindow : Window
         _modules = modules;
         DetailTitleTextBlock.Text = participant?.DisplayName ?? "Keine Auswahl";
         InitialsTextBlock.Text = participant?.Initials ?? string.Empty;
-        Title = participant is null ? "Teilnehmerdetails" : $"{participant.DisplayName} - Acta";
+        Title = participant is null ? "Teilnehmerdetails" : $"{participant.DisplayName} - Aula";
         if (participant is not null)
         {
             RefreshParticipantHintsForParticipant(participant);
@@ -272,7 +272,7 @@ public partial class ParticipantDetailWindow : Window
     {
         if (!Directory.Exists(entry.FolderPath))
         {
-            MessageBox.Show("Der Teilnehmerordner ist nicht erreichbar.", "Acta", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Der Teilnehmerordner ist nicht erreichbar.", "Aula", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -285,7 +285,7 @@ public partial class ParticipantDetailWindow : Window
             AppLogger.Error($"XHub.DetailWindow.OpenFolder '{entry.FolderPath}'", ex);
             MessageBox.Show(
                 $"Der Teilnehmerordner konnte nicht geöffnet werden:\n{ex.Message}",
-                "Acta",
+                "Aula",
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
         }
@@ -329,7 +329,7 @@ public partial class ParticipantDetailWindow : Window
         {
             MessageBox.Show(
                 $"Der {target.Label} konnte nicht eingefügt werden.\n\nDie erwartete Textmarke '{ex.BookmarkName}' wurde in der Akte nicht gefunden.",
-                "Acta",
+                "Aula",
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
         }
@@ -337,7 +337,7 @@ public partial class ParticipantDetailWindow : Window
         {
             MessageBox.Show(
                 $"Der {target.Label} konnte nicht eingefügt werden.\n\n{ex.UserMessage}",
-                "Acta",
+                "Aula",
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
         }
@@ -345,14 +345,14 @@ public partial class ParticipantDetailWindow : Window
         {
             MessageBox.Show(
                 $"Die Akte von {entry.DisplayName} ist aktuell nicht schreibbar.\n\n{ex.Message}",
-                "Acta",
+                "Aula",
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
         }
         catch (Exception ex)
         {
             AppLogger.Error($"XHub.DetailWindow.StructuredEntry '{entry.DisplayName}', Target='{target.Key}'", ex);
-            MessageBox.Show(ex.Message, "Acta", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, "Aula", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
@@ -392,7 +392,7 @@ public partial class ParticipantDetailWindow : Window
         catch (Exception ex)
         {
             AppLogger.Error($"XHub.DetailWindow.WordAction '{entry.DisplayName}'", ex);
-            MessageBox.Show(ex.Message, "Acta", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, "Aula", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {

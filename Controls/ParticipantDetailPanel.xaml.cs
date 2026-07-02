@@ -616,7 +616,7 @@ public partial class ParticipantDetailPanel : UserControl
             (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
         {
             AppLogger.Warn($"XHub.DetailPanel.OdooUrl ungültig oder nicht erlaubt: '{target}'");
-            MessageBox.Show("Der Odoo-Link ist ungültig.", "Acta", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Der Odoo-Link ist ungültig.", "Aula", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -631,7 +631,7 @@ public partial class ParticipantDetailPanel : UserControl
         catch (Exception ex)
         {
             AppLogger.Error($"XHub.DetailPanel.OdooUrl '{target}'", ex);
-            MessageBox.Show("Der Odoo-Link konnte nicht geöffnet werden.", "Acta", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Der Odoo-Link konnte nicht geöffnet werden.", "Aula", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 

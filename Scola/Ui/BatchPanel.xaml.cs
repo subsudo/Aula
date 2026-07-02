@@ -24,7 +24,8 @@ public partial class BatchPanel : UserControl
     private const string LbTableBookmark = "LB_LEHRBEGLEITUNG_TABELLE";
     private const string BiTodoBookmark = "BI_BERUFSINTEGRATION_TODO";
 
-    private readonly VS.WordStaHost _host = new();
+    // App-weiter Scola-Host (wird beim Beenden zentral entsorgt), kein eigener STA-Thread pro Panel.
+    private readonly VS.WordStaHost _host = App.ScolaWordStaHost;
     private readonly BatchEntryService _service;
 
     private readonly ObservableCollection<BatchResultLine> _buResults = new();
@@ -158,6 +159,14 @@ public partial class BatchPanel : UserControl
             return;
         }
 
+        // Auch der Batch respektiert den globalen Word-Sperrmechanismus, damit
+        // waehrend eines laufenden Batches keine Einzelaktion dazwischenfunkt.
+        if (!XHub.Services.WordBusyGuard.TryEnter())
+        {
+            status.Text = "Eine Word-Aktion läuft bereits. Bitte kurz warten.";
+            return;
+        }
+
         _busy = true;
         results.Clear();
         var progress = new Progress<string>(text => status.Text = text);
@@ -180,6 +189,7 @@ public partial class BatchPanel : UserControl
         finally
         {
             _busy = false;
+            XHub.Services.WordBusyGuard.Exit();
         }
     }
 
@@ -209,6 +219,12 @@ public partial class BatchPanel : UserControl
             };
         }).ToList();
 
+        if (!XHub.Services.WordBusyGuard.TryEnter())
+        {
+            BiTodoStatus.Text = "Eine Word-Aktion läuft bereits. Bitte kurz warten.";
+            return;
+        }
+
         _busy = true;
         _biTodoResults.Clear();
         BiTodoStatus.Text = $"Sammle {requests.Count} TN…";
@@ -233,6 +249,7 @@ public partial class BatchPanel : UserControl
         finally
         {
             _busy = false;
+            XHub.Services.WordBusyGuard.Exit();
         }
     }
 }

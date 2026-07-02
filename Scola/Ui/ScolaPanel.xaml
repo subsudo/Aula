@@ -289,7 +289,7 @@
             </Border>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                    <Setter TargetName="ChipBorder" Property="Background" Value="#D3D9E2" />
+                    <Setter TargetName="ChipBorder" Property="Background" Value="{DynamicResource Brush.SelectedTile}" />
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>

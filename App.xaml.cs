@@ -79,6 +79,10 @@ public partial class App : Application
     public static UserPrefs UserPrefs { get; private set; } = new();
     public static WordStaHost WordStaHost { get; private set; } = null!;
 
+    /// <summary>App-weiter STA-Host fuer die Scola-Word-Engine (Batch/BI-To-do).
+    /// Wird beim Beenden mit entsorgt, damit kein STA-Thread leakt.</summary>
+    public static VerlaufsakteApp.Services.WordStaHost ScolaWordStaHost { get; private set; } = null!;
+
     protected override void OnStartup(StartupEventArgs e)
     {
         if (!TryAcquireSingleInstance())
@@ -124,6 +128,7 @@ public partial class App : Application
         ApplyUiScale(UserPrefs.UiScaleLevel);
         TryPersistNormalizedUserPrefs(prefsService);
         WordStaHost = new WordStaHost();
+        ScolaWordStaHost = new VerlaufsakteApp.Services.WordStaHost();
 
         base.OnStartup(e);
 
@@ -214,6 +219,7 @@ public partial class App : Application
         SetBrush(resources, "Brush.AccentPressed", isDark ? "#7996BA" : "#6486B0");
         SetBrush(resources, "Brush.AccentSubtle", isDark ? "#5A6F90" : "#E3EBF5");
         SetBrush(resources, "Brush.SoftSurface", isDark ? "#6C778A" : "#EDF1F5");
+        SetBrush(resources, "Brush.SelectedTile", isDark ? "#8A97AD" : "#D3D9E2");
         SetBrush(resources, "Brush.Success", "#34D399");
         SetBrush(resources, "Brush.Warning", "#FBBF24");
         SetBrush(resources, "Brush.ArchiveBadgeBg", isDark ? "#451A03" : "#FEF3C7");
@@ -456,22 +462,36 @@ public partial class App : Application
 
     private static void TryDisposeWordStaHost()
     {
-        if (WordStaHost is null)
+        if (WordStaHost is not null)
         {
-            return;
+            try
+            {
+                WordStaHost.Dispose();
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Warn($"WordStaHost konnte beim Beenden nicht sauber freigegeben werden: {ex.Message}");
+            }
+            finally
+            {
+                WordStaHost = null!;
+            }
         }
 
-        try
+        if (ScolaWordStaHost is not null)
         {
-            WordStaHost.Dispose();
-        }
-        catch (Exception ex)
-        {
-            AppLogger.Warn($"WordStaHost konnte beim Beenden nicht sauber freigegeben werden: {ex.Message}");
-        }
-        finally
-        {
-            WordStaHost = null!;
+            try
+            {
+                ScolaWordStaHost.Dispose();
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Warn($"ScolaWordStaHost konnte beim Beenden nicht sauber freigegeben werden: {ex.Message}");
+            }
+            finally
+            {
+                ScolaWordStaHost = null!;
+            }
         }
     }
 
