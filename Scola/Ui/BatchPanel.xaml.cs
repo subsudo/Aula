@@ -114,8 +114,11 @@ public partial class BatchPanel : UserControl
 
         var rows = input.Text
             .Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None)
-            .Where(l => !string.IsNullOrWhiteSpace(l))
             .Select(l => l.Trim())
+            // Markdown-Code-Fences (```text, ```, ```csv …) rausfiltern, die beim
+            // Kopieren aus einem ChatGPT-Code-Fenster mitkommen und sonst faelschlich
+            // als Zeilen zaehlen.
+            .Where(l => !string.IsNullOrWhiteSpace(l) && !l.StartsWith("```", StringComparison.Ordinal))
             .ToList();
 
         if (rows.Count != eligible.Count)

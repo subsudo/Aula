@@ -430,9 +430,6 @@
                                 <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.SelectedTile}" />
                                 <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
                             </MultiDataTrigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.CardHover}" />
-                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -525,10 +522,14 @@
                                     <DataTemplate DataType="{x:Type models:ParticipantIndexEntry}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
-                                            <StackPanel VerticalAlignment="Center" Margin="2,0,0,0">
+                                            <Border Grid.Column="0" Style="{StaticResource StatusTagBadgeStyle}">
+                                                <TextBlock Text="{Binding StatusTag}" Style="{StaticResource StatusTagTextStyle}" />
+                                            </Border>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="2,0,0,0">
                                                 <TextBlock Text="{Binding DisplayName}" FontSize="12.5" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource Brush.PrimaryText}"
                                                            TextTrimming="CharacterEllipsis" />
@@ -550,7 +551,7 @@
                                                     </ItemsControl>
                                                 </StackPanel>
                                             </StackPanel>
-                                            <WrapPanel Grid.Column="1"
+                                            <WrapPanel Grid.Column="2"
                                                        VerticalAlignment="Center"
                                                        HorizontalAlignment="Right">
                                                 <Button Style="{StaticResource QuickActionButtonStyle}" Content="Ordner" Tag="folder"
@@ -851,12 +852,17 @@
                                 <DataTemplate DataType="{x:Type models:ParticipantIndexEntry}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
 
-                                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="2,0,0,0">
+                                        <Border Grid.Column="0" Style="{StaticResource StatusTagBadgeStyle}">
+                                            <TextBlock Text="{Binding StatusTag}" Style="{StaticResource StatusTagTextStyle}" />
+                                        </Border>
+
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="2,0,0,0">
                                             <TextBlock Text="{Binding DisplayName}" FontSize="12.5" FontWeight="SemiBold"
                                                        Foreground="{DynamicResource Brush.PrimaryText}"
                                                        TextTrimming="CharacterEllipsis" />
@@ -880,7 +886,7 @@
                                         </StackPanel>
 
                                             <WrapPanel x:Name="CurrentParticipantActionsPanel"
-                                                   Grid.Column="1"
+                                                   Grid.Column="2"
                                                    VerticalAlignment="Center"
                                                    HorizontalAlignment="Right"
                                                    Margin="12,0,0,0">
@@ -926,7 +932,7 @@
                                         </WrapPanel>
 
                                         <Button x:Name="CurrentParticipantRemoveButton"
-                                                Grid.Column="2"
+                                                Grid.Column="3"
                                                 Style="{StaticResource GhostButtonStyle}"
                                                 Content="×"
                                                 FontSize="{DynamicResource Ui.Font.IconAction}"

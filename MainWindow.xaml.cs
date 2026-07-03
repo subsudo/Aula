@@ -1283,7 +1283,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
 
         var delta = GetListPanelExpandedWidth() + 6;
-        var workArea = SystemParameters.WorkArea;
+        var workArea = GetCurrentMonitorWorkArea();
         // Rechte Kante fixieren: das Fenster waechst/schrumpft nach links,
         // damit das links liegende Listen-Panel den neuen Platz bekommt und
         // rechts alles an Ort und Stelle bleibt.
@@ -1374,6 +1374,61 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             RedrawWindow(handle, IntPtr.Zero, IntPtr.Zero,
                 RdwInvalidate | RdwErase | RdwUpdateNow | RdwAllChildren);
         }));
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct Rect32
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct MonitorInfo
+    {
+        public int cbSize;
+        public Rect32 rcMonitor;
+        public Rect32 rcWork;
+        public uint dwFlags;
+    }
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
+
+    [DllImport("user32.dll")]
+    private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MonitorInfo lpmi);
+
+    private const uint MonitorDefaultToNearest = 0x00000002;
+
+    /// <summary>
+    /// Arbeitsbereich (ohne Taskleiste) des Monitors, auf dem das Fenster liegt – in
+    /// WPF-Einheiten. Ersetzt SystemParameters.WorkArea (immer Primaermonitor), damit
+    /// das Fenster beim Auf-/Zuklappen im Multimonitor-Setup nicht auf den
+    /// Hauptbildschirm springt.
+    /// </summary>
+    private Rect GetCurrentMonitorWorkArea()
+    {
+        var handle = new WindowInteropHelper(this).Handle;
+        if (handle == IntPtr.Zero)
+        {
+            return SystemParameters.WorkArea;
+        }
+
+        var monitor = MonitorFromWindow(handle, MonitorDefaultToNearest);
+        var info = new MonitorInfo { cbSize = Marshal.SizeOf<MonitorInfo>() };
+        if (!GetMonitorInfo(monitor, ref info))
+        {
+            return SystemParameters.WorkArea;
+        }
+
+        var dpi = VisualTreeHelper.GetDpi(this);
+        return new Rect(
+            info.rcWork.Left / dpi.DpiScaleX,
+            info.rcWork.Top / dpi.DpiScaleY,
+            (info.rcWork.Right - info.rcWork.Left) / dpi.DpiScaleX,
+            (info.rcWork.Bottom - info.rcWork.Top) / dpi.DpiScaleY);
     }
 
     private void ToggleDetailPanelButton_OnClick(object sender, RoutedEventArgs e)
@@ -2354,7 +2409,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             return;
         }
 
-        var workArea = SystemParameters.WorkArea;
+        var workArea = GetCurrentMonitorWorkArea();
         if (open)
         {
             _widthBeforeBatch = Width;
