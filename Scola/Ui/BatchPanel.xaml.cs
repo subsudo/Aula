@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -44,6 +46,73 @@ public partial class BatchPanel : UserControl
         BiResults.ItemsSource = _biResults;
         LbResults.ItemsSource = _lbResults;
         BiTodoResults.ItemsSource = _biTodoResults;
+
+        // Beim Einfuegen (z. B. aus einem ChatGPT-Code-Fenster) Markdown-Code-Fences
+        // (```text, ```, ```csv …) direkt entfernen, damit sie gar nicht erst im Feld
+        // erscheinen – so wie Word sie beim Einfuegen weglaesst.
+        DataObject.AddPastingHandler(BuInput, OnBatchInputPaste);
+        DataObject.AddPastingHandler(BiInput, OnBatchInputPaste);
+        DataObject.AddPastingHandler(LbInput, OnBatchInputPaste);
+    }
+
+    private void OnBatchInputPaste(object sender, DataObjectPastingEventArgs e)
+    {
+        var text = e.DataObject.GetData(DataFormats.UnicodeText) as string
+                   ?? e.DataObject.GetData(DataFormats.Text) as string;
+        if (string.IsNullOrEmpty(text))
+        {
+            return;
+        }
+
+        var cleaned = SeparateEntries(StripCodeFences(text));
+        if (string.Equals(cleaned, text, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        var replacement = new DataObject();
+        replacement.SetData(DataFormats.UnicodeText, cleaned);
+        e.DataObject = replacement;
+    }
+
+    /// <summary>Entfernt Zeilen, die (getrimmt) mit ``` beginnen (Markdown-Code-Fences).</summary>
+    private static string StripCodeFences(string text)
+    {
+        var lines = text.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
+        var kept = lines.Where(l => !l.Trim().StartsWith("```", StringComparison.Ordinal));
+        return string.Join(Environment.NewLine, kept);
+    }
+
+    private static readonly Regex EntryDateLine = new(@"^\s*\d{1,2}\.\d{1,2}\.\d{2,4}", RegexOptions.Compiled);
+
+    /// <summary>
+    /// Minimale Lesbarkeits-Formatierung: vor jedem neuen Eintrag (Zeile, die mit einem
+    /// Datum beginnt) eine Leerzeile einfuegen. Leerzeilen ignoriert der Batch-Parser,
+    /// die Zeilenzahl bleibt also korrekt.
+    /// </summary>
+    private static string SeparateEntries(string text)
+    {
+        var lines = text.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n')
+            .Select(l => l.TrimEnd())
+            .Where(l => !string.IsNullOrWhiteSpace(l))
+            .ToList();
+
+        var builder = new StringBuilder();
+        for (var i = 0; i < lines.Count; i++)
+        {
+            if (i > 0 && EntryDateLine.IsMatch(lines[i]))
+            {
+                builder.Append(Environment.NewLine);
+            }
+
+            builder.Append(lines[i]);
+            if (i < lines.Count - 1)
+            {
+                builder.Append(Environment.NewLine);
+            }
+        }
+
+        return builder.ToString();
     }
 
     /// <summary>Aktuelle TN aus dem Tray (wird vom Hauptfenster gesetzt).</summary>
