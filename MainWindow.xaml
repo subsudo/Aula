@@ -231,10 +231,10 @@
         </Style>
 
         <Style TargetType="Border" x:Key="StatusTagBadgeStyle">
-            <Setter Property="Background" Value="{DynamicResource Brush.WindowBg}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Background" Value="{DynamicResource Brush.SoftSurface}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="7" />
             <Setter Property="Padding" Value="6,1" />
             <Setter Property="MinWidth" Value="{DynamicResource Ui.Size.StatusTagMinWidth}" />
             <Setter Property="Height" Value="{DynamicResource Ui.Size.StatusTagHeight}" />

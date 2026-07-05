@@ -44,8 +44,8 @@
         <Style x:Key="ScheduleCellBorderStyle" TargetType="Border">
             <Setter Property="Margin" Value="0" />
             <Setter Property="Background" Value="{DynamicResource Brush.PanelBg}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.SecondaryText}" />
-            <Setter Property="BorderThickness" Value="0.45" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+            <Setter Property="BorderThickness" Value="0.8" />
             <Setter Property="CornerRadius" Value="0" />
             <Setter Property="Padding" Value="3,3,3,4" />
             <Setter Property="MinHeight" Value="42" />
@@ -53,17 +53,17 @@
 
         <Style x:Key="ScheduleHeaderBorderStyle" TargetType="Border">
             <Setter Property="Margin" Value="0" />
-            <Setter Property="Background" Value="{DynamicResource Brush.CardBg}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.SecondaryText}" />
-            <Setter Property="BorderThickness" Value="0.45" />
+            <Setter Property="Background" Value="{DynamicResource Brush.SoftSurface}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+            <Setter Property="BorderThickness" Value="0.8" />
             <Setter Property="CornerRadius" Value="0" />
             <Setter Property="Padding" Value="0,2" />
         </Style>
 
         <Style x:Key="ScheduleLunchBorderStyle" TargetType="Border">
-            <Setter Property="Background" Value="{DynamicResource Brush.CardHover}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.SecondaryText}" />
-            <Setter Property="BorderThickness" Value="0.3" />
+            <Setter Property="Background" Value="{DynamicResource Brush.SoftSurface}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+            <Setter Property="BorderThickness" Value="0.6" />
             <Setter Property="CornerRadius" Value="0" />
         </Style>
 
