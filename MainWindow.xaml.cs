@@ -425,13 +425,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void UpdateDetailSplitterState()
     {
-        if (_isDetailPanelOpen)
-        {
-            DetailPanelSplitterColumn.Width = new GridLength(6);
-            DetailPanelSplitter.Visibility = Visibility.Visible;
-            return;
-        }
-
+        // TN-Details haben eine fixe Breite (nicht ziehbar); der Splitter bleibt
+        // dauerhaft ausgeblendet, damit die Spaltenabstaende ueberall gleich sind.
         DetailPanelSplitterColumn.Width = new GridLength(0);
         DetailPanelSplitter.Visibility = Visibility.Collapsed;
     }
