@@ -1,0 +1,75 @@
+<!--
+    ============================================================
+    Aula · Helles Theme "2a" (warm)
+    ============================================================
+    So anwenden:
+    1. Öffne  App.xaml  in deinem Projekt.
+    2. Ersetze deinen bestehenden Block der <SolidColorBrush ...>
+       Definitionen (ganz oben in <Application.Resources>) durch
+       die Brushes unten. NUR die Farbwerte ändern sich — die
+       x:Key-Namen bleiben exakt gleich, deshalb musst du sonst
+       nichts anpassen.
+    3. Starten — das ganze Fenster ist jetzt hell/warm.
+
+    Tipp: Vorher eine Kopie von App.xaml machen, dann kannst du
+    jederzeit zum dunklen Look zurück.
+    ============================================================
+-->
+
+<!-- Grundflächen -->
+<SolidColorBrush x:Key="Brush.WindowBg"        Color="#EFEDE9" />  <!-- Fensterhintergrund (warm) -->
+<SolidColorBrush x:Key="Brush.PanelBg"         Color="#FFFFFF" />  <!-- Panels / Karten -->
+<SolidColorBrush x:Key="Brush.CardBg"          Color="#FFFFFF" />  <!-- Buttons, Suchfeld, Eingaben -->
+<SolidColorBrush x:Key="Brush.CardHover"       Color="#F4F1EB" />  <!-- Hover -->
+<SolidColorBrush x:Key="Brush.SoftSurface"     Color="#F4F1EB" />  <!-- TN-Zeilen (leicht getönt) -->
+
+<!-- Text -->
+<SolidColorBrush x:Key="Brush.PrimaryText"     Color="#26241F" />
+<SolidColorBrush x:Key="Brush.SecondaryText"   Color="#6B6558" />
+<SolidColorBrush x:Key="Brush.SubtleText"      Color="#9A9488" />
+
+<!-- Linien / Akzent -->
+<SolidColorBrush x:Key="Brush.Border"          Color="#E3DFD8" />
+<SolidColorBrush x:Key="Brush.Accent"          Color="#5B7BA6" />
+<SolidColorBrush x:Key="Brush.AccentHover"     Color="#4E6E99" />
+<SolidColorBrush x:Key="Brush.AccentPressed"   Color="#45638C" />
+<SolidColorBrush x:Key="Brush.AccentSubtle"    Color="#EDF1F8" />  <!-- ausgewählte Zeile / Liste -->
+<SolidColorBrush x:Key="Brush.SelectedTile"    Color="#EDF1F8" />  <!-- falls in deinem Projekt definiert -->
+
+<!-- Status-Badges (hell) -->
+<SolidColorBrush x:Key="Brush.StartBadgeBg"    Color="#E3ECFB" />
+<SolidColorBrush x:Key="Brush.StartBadgeText"  Color="#2C5D9B" />
+<SolidColorBrush x:Key="Brush.ArchiveBadgeBg"  Color="#FBEBD3" />
+<SolidColorBrush x:Key="Brush.ArchiveBadgeText" Color="#8A5A12" />
+
+<!-- Signalfarben (auf Hell abgestimmt) -->
+<SolidColorBrush x:Key="Brush.Success"         Color="#2E9C6E" />
+<SolidColorBrush x:Key="Brush.Warning"         Color="#C98A16" />
+<SolidColorBrush x:Key="Brush.Error"           Color="#D06666" />
+<SolidColorBrush x:Key="Brush.Info"            Color="#3E7BD1" />
+
+<!-- Scrollbalken -->
+<SolidColorBrush x:Key="Brush.ScrollTrack"       Color="#ECE8E1" />
+<SolidColorBrush x:Key="Brush.ScrollThumb"       Color="#CFC7B8" />
+<SolidColorBrush x:Key="Brush.ScrollThumbHover"  Color="#BDB4A2" />
+<SolidColorBrush x:Key="Brush.ScrollThumbDrag"   Color="#ADA391" />
+
+<!--
+    ============================================================
+    Zwei optionale Feinheiten (nur wenn du es exakt wie 2a willst)
+    ============================================================
+
+    a) TN-Zeilen als WEISSE Karten mit feiner Linie (statt getönt):
+       In MainWindow.xaml bei "ParticipantListItemStyle" und
+       "WorkingListItemStyle" im Border:
+           Background="#FFFFFF"
+           BorderBrush="{DynamicResource Brush.Border}"
+           BorderThickness="1"
+       (SoftSurface oben dann wieder auf #FFFFFF setzen.)
+       -> Ohne diese Änderung sind die Zeilen leicht getönt (auch schön).
+
+    b) "Speichern"-Button (SaveListButtonStyle in MainWindow.xaml):
+       hat feste Farben #E6E9EF / #D3D8E0. Für den warmen Look:
+           Background="#F4F1EB"  BorderBrush="#E3DFD8"
+    ============================================================
+-->

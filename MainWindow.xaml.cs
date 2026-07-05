@@ -566,12 +566,13 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void UpdateStatusBarAlignment()
     {
-        if (!IsLoaded || MainAreaBorder.ActualWidth <= 0) return;
+        if (!IsLoaded || RootGrid.ActualWidth <= 0) return;
 
-        var origin = MainAreaBorder.TransformToAncestor(RootGrid).Transform(new Point(0, 0));
-        StatusBarBorder.HorizontalAlignment = HorizontalAlignment.Left;
-        StatusBarBorder.Width = MainAreaBorder.ActualWidth;
-        StatusBarBorder.Margin = new Thickness(origin.X, 8, 0, 8);
+        // Der Status-Balken spannt über die volle Breite der App (nicht mehr nur
+        // über die Acta-Hauptspalte).
+        StatusBarBorder.HorizontalAlignment = HorizontalAlignment.Stretch;
+        StatusBarBorder.Width = double.NaN;
+        StatusBarBorder.Margin = new Thickness(0, 6, 0, 0);
     }
 
     private void UpdateListsEmptyState()

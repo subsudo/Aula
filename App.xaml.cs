@@ -206,32 +206,33 @@ public partial class App : Application
         UserPrefs.IsDarkTheme = isDark;
         var resources = Current.Resources;
 
-        SetBrush(resources, "Brush.WindowBg", isDark ? "#485161" : "#F4F6F8");
+        // Helles Theme "2a" (warm) – Werte vom Designer. Dark-Werte bleiben (ungenutzt).
+        SetBrush(resources, "Brush.WindowBg", isDark ? "#485161" : "#EFEDE9");
         SetBrush(resources, "Brush.PanelBg", isDark ? "#556072" : "#FFFFFF");
-        SetBrush(resources, "Brush.CardBg", isDark ? "#647084" : "#F8FAFC");
-        SetBrush(resources, "Brush.CardHover", isDark ? "#748199" : "#EEF2F6");
-        SetBrush(resources, "Brush.PrimaryText", isDark ? "#F5F7FA" : "#1A1D22");
-        SetBrush(resources, "Brush.SecondaryText", isDark ? "#CCD4E0" : "#646B76");
-        SetBrush(resources, "Brush.SubtleText", isDark ? "#9CA7B8" : "#8B94A3");
-        SetBrush(resources, "Brush.Border", isDark ? "#7A879C" : "#D5DCE5");
-        SetBrush(resources, "Brush.Accent", isDark ? "#8EA9CE" : "#7394BD");
-        SetBrush(resources, "Brush.AccentHover", isDark ? "#A4BDE0" : "#89A8CE");
-        SetBrush(resources, "Brush.AccentPressed", isDark ? "#7996BA" : "#6486B0");
-        SetBrush(resources, "Brush.AccentSubtle", isDark ? "#5A6F90" : "#E3EBF5");
-        SetBrush(resources, "Brush.SoftSurface", isDark ? "#6C778A" : "#EDF1F5");
-        SetBrush(resources, "Brush.SelectedTile", isDark ? "#8A97AD" : "#D3D9E2");
-        SetBrush(resources, "Brush.Success", "#34D399");
-        SetBrush(resources, "Brush.Warning", "#FBBF24");
-        SetBrush(resources, "Brush.ArchiveBadgeBg", isDark ? "#451A03" : "#FEF3C7");
-        SetBrush(resources, "Brush.ArchiveBadgeText", isDark ? "#FDE68A" : "#92400E");
-        SetBrush(resources, "Brush.StartBadgeBg", isDark ? "#172554" : "#DBEAFE");
-        SetBrush(resources, "Brush.StartBadgeText", isDark ? "#BFDBFE" : "#1E40AF");
-        SetBrush(resources, "Brush.Error", "#F87171");
-        SetBrush(resources, "Brush.Info", "#60A5FA");
-        SetBrush(resources, "Brush.ScrollTrack", isDark ? "#E1E6ED" : "#EEF2F6");
-        SetBrush(resources, "Brush.ScrollThumb", isDark ? "#7A8599" : "#CCD6E2");
-        SetBrush(resources, "Brush.ScrollThumbHover", isDark ? "#93A0B5" : "#D7E0EA");
-        SetBrush(resources, "Brush.ScrollThumbDrag", isDark ? "#A3AFC2" : "#E1E8F0");
+        SetBrush(resources, "Brush.CardBg", isDark ? "#647084" : "#FFFFFF");
+        SetBrush(resources, "Brush.CardHover", isDark ? "#748199" : "#F4F1EB");
+        SetBrush(resources, "Brush.PrimaryText", isDark ? "#F5F7FA" : "#26241F");
+        SetBrush(resources, "Brush.SecondaryText", isDark ? "#CCD4E0" : "#6B6558");
+        SetBrush(resources, "Brush.SubtleText", isDark ? "#9CA7B8" : "#9A9488");
+        SetBrush(resources, "Brush.Border", isDark ? "#7A879C" : "#E3DFD8");
+        SetBrush(resources, "Brush.Accent", isDark ? "#8EA9CE" : "#5B7BA6");
+        SetBrush(resources, "Brush.AccentHover", isDark ? "#A4BDE0" : "#4E6E99");
+        SetBrush(resources, "Brush.AccentPressed", isDark ? "#7996BA" : "#45638C");
+        SetBrush(resources, "Brush.AccentSubtle", isDark ? "#5A6F90" : "#EDF1F8");
+        SetBrush(resources, "Brush.SoftSurface", isDark ? "#6C778A" : "#F4F1EB");
+        SetBrush(resources, "Brush.SelectedTile", isDark ? "#8A97AD" : "#EDF1F8");
+        SetBrush(resources, "Brush.Success", "#2E9C6E");
+        SetBrush(resources, "Brush.Warning", "#C98A16");
+        SetBrush(resources, "Brush.ArchiveBadgeBg", isDark ? "#451A03" : "#FBEBD3");
+        SetBrush(resources, "Brush.ArchiveBadgeText", isDark ? "#FDE68A" : "#8A5A12");
+        SetBrush(resources, "Brush.StartBadgeBg", isDark ? "#172554" : "#E3ECFB");
+        SetBrush(resources, "Brush.StartBadgeText", isDark ? "#BFDBFE" : "#2C5D9B");
+        SetBrush(resources, "Brush.Error", "#D06666");
+        SetBrush(resources, "Brush.Info", "#3E7BD1");
+        SetBrush(resources, "Brush.ScrollTrack", isDark ? "#E1E6ED" : "#ECE8E1");
+        SetBrush(resources, "Brush.ScrollThumb", isDark ? "#7A8599" : "#CFC7B8");
+        SetBrush(resources, "Brush.ScrollThumbHover", isDark ? "#93A0B5" : "#BDB4A2");
+        SetBrush(resources, "Brush.ScrollThumbDrag", isDark ? "#A3AFC2" : "#ADA391");
 
         foreach (Window w in Current.Windows)
             ApplyDarkTitleBar(w, isDark);

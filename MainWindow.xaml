@@ -70,8 +70,8 @@
         </Style>
 
         <Style TargetType="Button" x:Key="SaveListButtonStyle" BasedOn="{StaticResource SecondaryButtonStyle}">
-            <Setter Property="Background" Value="#E6E9EF" />
-            <Setter Property="BorderBrush" Value="#D3D8E0" />
+            <Setter Property="Background" Value="#F4F1EB" />
+            <Setter Property="BorderBrush" Value="#E3DFD8" />
             <Setter Property="Foreground" Value="{DynamicResource Brush.PrimaryText}" />
         </Style>
 
@@ -301,13 +301,15 @@
             </Style.Triggers>
         </Style>
 
+        <!-- Die TextBox selbst bleibt im Standard-Template (Text/Caret garantiert korrekt);
+             die runden Ecken kommen vom umgebenden SearchBoxBorder in der Topbar. -->
         <Style TargetType="TextBox" x:Key="SearchTextBoxStyle">
-            <Setter Property="Background" Value="{DynamicResource Brush.CardBg}" />
+            <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{DynamicResource Brush.PrimaryText}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="{DynamicResource Ui.Padding.SearchTextBox}" />
             <Setter Property="FontSize" Value="{DynamicResource Ui.Font.Search}" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
 
         <Style x:Key="SubtleProgressBarStyle" TargetType="ProgressBar">
@@ -394,9 +396,9 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
                         <Border x:Name="ItemBorder"
-                                Background="{DynamicResource Brush.SoftSurface}"
+                                Background="{DynamicResource Brush.PanelBg}"
                                 BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="0"
+                                BorderThickness="1"
                                 CornerRadius="10"
                                 Padding="{DynamicResource Ui.Padding.ParticipantItem}">
                             <ContentPresenter />
@@ -414,9 +416,9 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
                         <Border x:Name="ItemBorder"
-                                Background="{DynamicResource Brush.SoftSurface}"
+                                Background="{DynamicResource Brush.PanelBg}"
                                 BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="0"
+                                BorderThickness="1"
                                 CornerRadius="10"
                                 Padding="{DynamicResource Ui.Padding.WorkingItem}">
                             <ContentPresenter />
@@ -463,11 +465,20 @@
                         Click="ToggleListPanelButton_OnClick" />
 
                 <Grid x:Name="TopBarSearchArea" HorizontalAlignment="Left" VerticalAlignment="Center">
-                    <TextBox x:Name="SearchTextBox"
-                             Style="{StaticResource SearchTextBoxStyle}"
-                             VerticalAlignment="Center"
-                             TextChanged="SearchTextBox_OnTextChanged"
-                             GotKeyboardFocus="SearchTextBox_OnGotKeyboardFocus" />
+                    <Border x:Name="SearchBoxBorder"
+                            Background="{DynamicResource Brush.CardBg}"
+                            BorderBrush="{DynamicResource Brush.Border}"
+                            BorderThickness="1"
+                            CornerRadius="9"
+                            Height="{DynamicResource Ui.Size.IconButton}"
+                            VerticalAlignment="Center">
+                        <TextBox x:Name="SearchTextBox"
+                                 Style="{StaticResource SearchTextBoxStyle}"
+                                 VerticalAlignment="Center"
+                                 Padding="30,0,74,0"
+                                 TextChanged="SearchTextBox_OnTextChanged"
+                                 GotKeyboardFocus="SearchTextBox_OnGotKeyboardFocus" />
+                    </Border>
                     <TextBlock x:Name="SearchPlaceholder"
                                Text="Teilnehmende suchen..."
                                IsHitTestVisible="False"
@@ -1049,13 +1060,18 @@
             <scola:BatchPanel x:Name="BatchPanel" Grid.Column="9" Margin="12,0,0,0" />
         </Grid>
 
-        <Border x:Name="StatusBarBorder" Grid.Row="2" Style="{StaticResource PanelBorderStyle}" Margin="0,8,0,8" Padding="10,6">
-            <DockPanel>
-                <TextBlock x:Name="IndexStateTextBlock" DockPanel.Dock="Right"
-                           Margin="14,0,0,0"
-                           Foreground="{DynamicResource Brush.SecondaryText}" FontSize="{DynamicResource Ui.Font.CurrentListSubtitle}"
-                           VerticalAlignment="Center" />
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+        <Border x:Name="StatusBarBorder" Grid.Row="2"
+                Background="{DynamicResource Brush.PanelBg}"
+                BorderBrush="{DynamicResource Brush.Border}"
+                BorderThickness="0"
+                CornerRadius="12"
+                Margin="0,6,0,0" Padding="16,9">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock x:Name="StatusTextBlock" Text="Bereit" FontSize="{DynamicResource Ui.Font.StatusBar}" VerticalAlignment="Center" />
                     <StackPanel x:Name="EvaluateProgressPanel"
                                 Orientation="Horizontal"
@@ -1075,7 +1091,11 @@
                                    Foreground="{DynamicResource Brush.SecondaryText}" />
                     </StackPanel>
                 </StackPanel>
-            </DockPanel>
+                <TextBlock x:Name="IndexStateTextBlock" Grid.Column="1"
+                           Margin="14,0,0,0"
+                           Foreground="{DynamicResource Brush.SecondaryText}" FontSize="{DynamicResource Ui.Font.CurrentListSubtitle}"
+                           VerticalAlignment="Center" />
+            </Grid>
         </Border>
     </Grid>
 </Window>

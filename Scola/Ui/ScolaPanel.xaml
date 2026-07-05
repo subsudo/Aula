@@ -10,23 +10,23 @@
 
         <converters:QuickActionVisibilityConverter x:Key="QuickActionVisibilityConverter" />
 
-        <!-- Heller, schlichter Look -->
+        <!-- Warmer, heller Look (Theme 2a) -->
         <SolidColorBrush x:Key="L.PanelBg" Color="#FFFFFF" />
-        <SolidColorBrush x:Key="L.FieldBg" Color="#F3F5F8" />
-        <SolidColorBrush x:Key="L.Text" Color="#1E2530" />
-        <SolidColorBrush x:Key="L.TextSecondary" Color="#5A6573" />
-        <SolidColorBrush x:Key="L.TextSubtle" Color="#8B95A4" />
-        <SolidColorBrush x:Key="L.Border" Color="#E4E8EE" />
-        <SolidColorBrush x:Key="L.Hover" Color="#EDF1F7" />
-        <SolidColorBrush x:Key="L.Btn" Color="#F2F4F7" />
-        <SolidColorBrush x:Key="L.BtnHover" Color="#E6EAF0" />
-        <SolidColorBrush x:Key="L.BtnText" Color="#3A4250" />
-        <SolidColorBrush x:Key="L.BtnBorder" Color="#D5DBE3" />
-        <SolidColorBrush x:Key="L.ToggleActive" Color="#DCE1E8" />
+        <SolidColorBrush x:Key="L.FieldBg" Color="#F4F1EB" />
+        <SolidColorBrush x:Key="L.Text" Color="#26241F" />
+        <SolidColorBrush x:Key="L.TextSecondary" Color="#6B6558" />
+        <SolidColorBrush x:Key="L.TextSubtle" Color="#9A9488" />
+        <SolidColorBrush x:Key="L.Border" Color="#E3DFD8" />
+        <SolidColorBrush x:Key="L.Hover" Color="#F4F1EB" />
+        <SolidColorBrush x:Key="L.Btn" Color="#F4F1EB" />
+        <SolidColorBrush x:Key="L.BtnHover" Color="#ECE8E1" />
+        <SolidColorBrush x:Key="L.BtnText" Color="#4A463E" />
+        <SolidColorBrush x:Key="L.BtnBorder" Color="#E3DFD8" />
+        <SolidColorBrush x:Key="L.ToggleActive" Color="#E7E1D6" />
 
-        <!-- Kompakte TN-Kachel (grau, Buttons weiss, ohne Umrandung) -->
+        <!-- Kompakte TN-Kachel (warm getönt, Buttons weiss, ohne Umrandung) -->
         <Style x:Key="L.Chip" TargetType="Border">
-            <Setter Property="Background" Value="#ECEFF3" />
+            <Setter Property="Background" Value="#F4F1EB" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Padding" Value="7,5" />

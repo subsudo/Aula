@@ -22,6 +22,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Referenz-Datei des Designers, kein kompilierbares XAML -->
+    <Page Remove="Aula-Theme-2a.xaml" />
+    <None Include="Aula-Theme-2a.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Assets\Aula.ico" />
     <Resource Include="Assets\icon.ico" />
     <Resource Include="Assets\icon.png" />
