@@ -9,10 +9,10 @@
     <AssemblyName>Aula</AssemblyName>
     <Product>Aula</Product>
     <Title>Aula</Title>
-    <Version>0.1.0</Version>
-    <AssemblyVersion>0.1.0.0</AssemblyVersion>
-    <FileVersion>0.1.0.0</FileVersion>
-    <InformationalVersion>0.1.0</InformationalVersion>
+    <Version>0.1.1</Version>
+    <AssemblyVersion>0.1.1.0</AssemblyVersion>
+    <FileVersion>0.1.1.0</FileVersion>
+    <InformationalVersion>0.1.1</InformationalVersion>
     <ApplicationIcon>Assets\Aula.ico</ApplicationIcon>
   </PropertyGroup>
 
