@@ -624,14 +624,6 @@
                             Content="+"
                             ToolTip="Ansicht vergrössern"
                             Click="IncreaseUiScaleButton_OnClick" />
-                    <Button x:Name="ToggleNotesPanelButton"
-                            Style="{StaticResource SecondaryButtonStyle}"
-                            Content="Notizen"
-                            Padding="10,4"
-                            Margin="0,0,6,0"
-                            Visibility="Collapsed"
-                            ToolTip="Notizspalte ein-/ausblenden"
-                            Click="ToggleNotesPanelButton_OnClick" />
                     <Button x:Name="ToggleDetailPanelButton"
                             Style="{StaticResource SecondaryButtonStyle}"
                             Content="Details"
@@ -678,8 +670,6 @@
                 <ColumnDefinition x:Name="ListPanelColumn" Width="200" MinWidth="132" />
                 <ColumnDefinition x:Name="ListPanelSplitterColumn" Width="6" />
                 <ColumnDefinition x:Name="MainContentColumn" Width="*" MinWidth="180" />
-                <ColumnDefinition x:Name="NotesPanelSplitterColumn" Width="0" />
-                <ColumnDefinition x:Name="NotesPanelColumn" Width="0" MinWidth="0" />
                 <ColumnDefinition x:Name="DetailPanelSplitterColumn" Width="6" />
                 <ColumnDefinition x:Name="DetailPanelColumn" Width="220" MinWidth="220" />
                 <ColumnDefinition x:Name="ScolaPanelSplitterColumn" Width="6" />
@@ -966,7 +956,7 @@
                     </Grid>
                 </Border>
             </Grid>
-            <GridSplitter x:Name="NotesPanelSplitter"
+            <GridSplitter x:Name="DetailPanelSplitter"
                           Grid.Column="3"
                           Width="6"
                           HorizontalAlignment="Stretch"
@@ -977,27 +967,8 @@
                           ShowsPreview="False"
                           Visibility="Collapsed" />
 
-            <Border x:Name="NotesPanelBorder"
-                    Grid.Column="4"
-                    Style="{StaticResource PanelBorderStyle}"
-                    MinWidth="364"
-                    Visibility="Collapsed">
-                <controls:ParticipantNotesPanel x:Name="NotesPanel" />
-            </Border>
-
-            <GridSplitter x:Name="DetailPanelSplitter"
-                          Grid.Column="5"
-                          Width="6"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch"
-                          Background="Transparent"
-                          ResizeBehavior="PreviousAndNext"
-                          ResizeDirection="Columns"
-                          ShowsPreview="False"
-                          Visibility="Collapsed" />
-
             <Border x:Name="DetailPanelBorder"
-                    Grid.Column="6"
+                    Grid.Column="4"
                     Style="{StaticResource PanelBorderStyle}"
                     Margin="2,0,0,0">
                 <Grid>
@@ -1044,20 +1015,20 @@
             </Border>
 
             <GridSplitter x:Name="ScolaPanelSplitter"
-                          Grid.Column="7"
+                          Grid.Column="5"
                           Width="6"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Background="Transparent" />
 
-            <scola:ScolaPanel x:Name="ScolaPanel" Grid.Column="8"
+            <scola:ScolaPanel x:Name="ScolaPanel" Grid.Column="6"
                               Margin="6,0,0,0"
                               BatchToggleRequested="ScolaPanel_OnBatchToggleRequested"
                               ParticipantActivated="ScolaPanel_OnParticipantActivated"
                               TrayChanged="ScolaPanel_OnTrayChanged"
                               QuickActionRequested="ScolaPanel_OnQuickActionRequested" />
 
-            <scola:BatchPanel x:Name="BatchPanel" Grid.Column="9" Margin="12,0,0,0" />
+            <scola:BatchPanel x:Name="BatchPanel" Grid.Column="7" Margin="12,0,0,0" />
         </Grid>
 
         <Border x:Name="StatusBarBorder" Grid.Row="2"

@@ -48,8 +48,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private bool _isRefreshing;
     private bool _isListPanelOpen = true;
     private bool _isDetailPanelOpen;
-    private bool _isNotesPanelOpen;
-    private double? _lastNotesPanelWidth;
     private string? _archiveRootPath;
     private string? _loadedArchiveRootPath;
     private bool _isArchiveAvailable;
@@ -64,10 +62,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private const double BaseListPanelWindowMinWidth = 520;
     private const double BaseDetailPanelWindowMinWidth = 680;
     private const double BaseFullPanelsWindowMinWidth = 860;
-    // Toolbar width is ~340 DIP; with the 12+12 panel padding the real column minimum is 364.
-    private const double NotesPanelMinWidth = 364;
-    private const double NotesPanelDefaultWidth = NotesPanelMinWidth;
-    private const double NotesPanelWidthContribution = NotesPanelMinWidth + 6;
     private static readonly TimeSpan AutoRefreshBaseInterval = TimeSpan.FromHours(4);
     private static readonly TimeSpan AutoRefreshJitterMax = TimeSpan.FromMinutes(5);
 
@@ -100,8 +94,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
         _isListPanelOpen = !App.UserPrefs.IsListPanelCollapsed;
         _isDetailPanelOpen = !App.UserPrefs.IsDetailPanelCollapsed;
-        _isNotesPanelOpen = false; // Aula: Notizen vorerst entfernt (Button ausgeblendet, Panel fix geschlossen)
-        _lastNotesPanelWidth = App.UserPrefs.NotesPanelWidth;
         _isArchiveSearchEnabled = App.UserPrefs.IsArchiveSearchEnabled;
 
         LoadLists();
@@ -111,7 +103,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         ConfigureParticipantHintsRefreshTimer();
         UpdateSearchUi();
         UpdateListPanelState();
-        UpdateNotesPanelState();
         UpdateDetailPanelState();
         UpdateWindowWidthConstraints();
         UpdateUiScaleButtons();
@@ -144,7 +135,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     public IReadOnlyList<string> VisibleQuickActions => App.Config.VisibleQuickActions;
     public bool ShowStatusTags => App.Config.ShowStatusTags;
     public bool IsDetailPanelOpen => _isDetailPanelOpen;
-    public bool IsNotesPanelOpen => _isNotesPanelOpen;
     public bool IsArchiveSearchEnabled => _isArchiveSearchEnabled;
     public bool IsArchiveLoading => _isArchiveLoading;
     public string ArchiveSearchButtonText => _isArchiveLoading ? "Archiv..." : "Archiv";
@@ -433,70 +423,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         UpdateLayoutAlignment();
     }
 
-    private void UpdateNotesPanelState()
-    {
-        if (_isNotesPanelOpen)
-        {
-            var notesWidth = GetRequestedNotesPanelWidth();
-            NotesPanelColumn.MinWidth = NotesPanelMinWidth;
-            NotesPanelColumn.Width = new GridLength(notesWidth);
-            NotesPanelSplitterColumn.Width = new GridLength(6);
-            NotesPanelBorder.Visibility = Visibility.Visible;
-            NotesPanelSplitter.Visibility = Visibility.Visible;
-            ToggleNotesPanelButton.ToolTip = "Notizspalte ausblenden";
-            ToggleNotesPanelButton.Background = (Brush)FindResource("Brush.AccentSubtle");
-            ToggleNotesPanelButton.BorderBrush = (Brush)FindResource("Brush.Accent");
-            NotesPanel.SetParticipant(_selectedParticipant);
-        }
-        else
-        {
-            CaptureCurrentNotesPanelWidth();
-            NotesPanel.FlushPendingAutosave();
-            NotesPanel.SetParticipant(null);
-            NotesPanelColumn.MinWidth = 0;
-            NotesPanelColumn.Width = new GridLength(0);
-            NotesPanelSplitterColumn.Width = new GridLength(0);
-            NotesPanelBorder.Visibility = Visibility.Collapsed;
-            NotesPanelSplitter.Visibility = Visibility.Collapsed;
-            ToggleNotesPanelButton.ToolTip = "Notizspalte einblenden";
-            ToggleNotesPanelButton.Background = (Brush)FindResource("Brush.CardBg");
-            ToggleNotesPanelButton.BorderBrush = (Brush)FindResource("Brush.Border");
-        }
-
-        UpdateDetailSplitterState();
-        MainContentColumn.MinWidth = GetMainContentMinWidth();
-        UpdateWindowWidthConstraints();
-        UpdateLayoutAlignment();
-    }
-
-    private double GetRequestedNotesPanelWidth()
-    {
-        var requestedWidth = _lastNotesPanelWidth ?? App.UserPrefs.NotesPanelWidth ?? NotesPanelDefaultWidth;
-        return Math.Max(requestedWidth, NotesPanelMinWidth);
-    }
-
-    private void CaptureCurrentNotesPanelWidth()
-    {
-        if (!_isNotesPanelOpen)
-        {
-            return;
-        }
-
-        var width = NotesPanelColumn.ActualWidth >= NotesPanelMinWidth
-            ? NotesPanelColumn.ActualWidth
-            : NotesPanelColumn.Width.Value;
-        if (width < NotesPanelMinWidth)
-        {
-            return;
-        }
-
-        _lastNotesPanelWidth = width;
-        App.UserPrefs.NotesPanelWidth = width;
-    }
-
     private void UpdateDetailSplitterState()
     {
-        if (_isDetailPanelOpen && _isNotesPanelOpen)
+        if (_isDetailPanelOpen)
         {
             DetailPanelSplitterColumn.Width = new GridLength(6);
             DetailPanelSplitter.Visibility = Visibility.Visible;
@@ -510,7 +439,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private void UpdateWindowWidthConstraints()
     {
         var targetMinWidth = Math.Max(
-            GetRequestedWindowMinWidth() + (_isNotesPanelOpen ? NotesPanelWidthContribution : 0),
+            GetRequestedWindowMinWidth(),
             GetPanelBasedWindowMinWidth());
 
         MinWidth = targetMinWidth;
@@ -533,14 +462,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             minimum += GetListPanelMinWidth() + 6 + 16;
         }
 
-        if (_isNotesPanelOpen)
-        {
-            minimum += NotesPanelMinWidth + 6;
-        }
-
         if (_isDetailPanelOpen)
         {
-            minimum += GetDetailPanelPreferredWidth() + (_isNotesPanelOpen ? 6 : 0);
+            minimum += GetDetailPanelPreferredWidth();
         }
 
         return minimum;
@@ -638,7 +562,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 DetailPanel.Clear();
             }
 
-            NotesPanel.SetParticipant(null);
             return;
         }
 
@@ -648,11 +571,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         if (_isDetailPanelOpen)
         {
             DetailPanel.UpdateParticipant(_selectedParticipant, GetActiveModules());
-        }
-
-        if (_isNotesPanelOpen)
-        {
-            NotesPanel.SetParticipant(_selectedParticipant);
         }
     }
 
@@ -791,11 +709,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         _selectedParticipant = entry;
         EnrichParticipantDetailMetadata(entry);
         RefreshParticipantHintsForParticipant(entry);
-        if (_isNotesPanelOpen)
-        {
-            NotesPanel.SetParticipant(entry);
-        }
-
         if (_isDetailPanelOpen)
         {
             DetailPanel.UpdateParticipant(entry, GetActiveModules());
@@ -805,7 +718,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private void ClearSelectedParticipant()
     {
         _selectedParticipant = null;
-        NotesPanel.SetParticipant(null);
     }
 
     private void UpdateIndexState(IReadOnlyList<string> warnings)
@@ -1013,9 +925,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         App.UserPrefs.UiScaleLevel = CurrentUiScaleLevel;
         App.UserPrefs.IsListPanelCollapsed = !_isListPanelOpen;
         App.UserPrefs.IsDetailPanelCollapsed = !_isDetailPanelOpen;
-        App.UserPrefs.IsNotesPanelCollapsed = !_isNotesPanelOpen;
         App.UserPrefs.IsArchiveSearchEnabled = _isArchiveSearchEnabled && _isArchiveAvailable;
-        CaptureCurrentNotesPanelWidth();
         App.SaveUserPrefs();
     }
 
@@ -1438,17 +1348,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         UpdateDetailPanelState();
     }
 
-    private void ToggleNotesPanelButton_OnClick(object sender, RoutedEventArgs e)
-    {
-        if (_isNotesPanelOpen)
-        {
-            CaptureCurrentNotesPanelWidth();
-        }
-
-        _isNotesPanelOpen = !_isNotesPanelOpen;
-        UpdateNotesPanelState();
-    }
-
     private void DecreaseUiScaleButton_OnClick(object sender, RoutedEventArgs e)
     {
         ApplyUiScaleLevel(CurrentUiScaleLevel - 1);
@@ -1625,10 +1524,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         App.UserPrefs.ShowMiniSchedule = dialog.Result.ShowMiniSchedule;
         App.UserPrefs.AutoPrefillOnEmptyClipboard = dialog.Result.AutoPrefillOnEmptyClipboard;
         App.UserPrefs.DefaultEntryInitials = dialog.Result.DefaultEntryInitials;
-        App.UserPrefs.IsNotesPanelCollapsed = !_isNotesPanelOpen;
-        CaptureCurrentNotesPanelWidth();
         App.ApplyTheme(dialog.Result.IsDarkTheme);
-        UpdateNotesPanelState();
         UpdateDetailPanelState();
         App.SaveUserPrefs();
         DataContext = null;
@@ -2280,7 +2176,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         App.SaveUserPrefs();
         UpdateUiScaleButtons();
         UpdateListPanelState();
-        UpdateNotesPanelState();
         UpdateDetailPanelState();
         UpdateWindowWidthConstraints();
         UpdateWorkingListHeader();
@@ -2311,7 +2206,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
     {
-        NotesPanel.FlushPendingAutosave();
         PersistWindowState();
     }
 
@@ -2580,10 +2474,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         var source = e.OriginalSource as DependencyObject;
 
         // Klick auf eine TN-Kachel (Acta-Liste/Suche oder Scola-Chip) oder in den
-        // Detail-/Notiz-Bereich haelt die Auswahl.
+        // Detail-Bereich haelt die Auswahl.
         if (FindVisualAncestor<ListBoxItem>(source) is not null) return;
         if (FindParticipantDataContext(source) is not null) return;
-        if (IsWithinElement(source, DetailPanelBorder) || IsWithinElement(source, NotesPanel)) return;
+        if (IsWithinElement(source, DetailPanelBorder)) return;
 
         DeselectParticipant();
     }
@@ -2599,7 +2493,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
 
         _selectedParticipant = null;
-        NotesPanel.SetParticipant(null);
         if (_isDetailPanelOpen)
         {
             DetailPanel.UpdateParticipant(null, GetActiveModules());

@@ -13,7 +13,6 @@ public partial class SettingsWindow : Window
     private readonly bool _showStatusTags;
     private readonly bool _showParticipantPhoto;
     private readonly bool _showMiniSchedule;
-    private readonly bool _showNotesPanel;
     private SettingsWindowAction _requestedAction = SettingsWindowAction.Save;
 
     protected override void OnSourceInitialized(EventArgs e)
@@ -30,7 +29,6 @@ public partial class SettingsWindow : Window
         _showStatusTags = config.ShowStatusTags;
         _showParticipantPhoto = config.ShowParticipantPhoto;
         _showMiniSchedule = prefs.ShowMiniSchedule;
-        _showNotesPanel = !prefs.IsNotesPanelCollapsed;
 
         ServerPathTextBox.Text = string.IsNullOrWhiteSpace(config.LvBasePath)
             ? config.ServerBasePath
@@ -76,7 +74,6 @@ public partial class SettingsWindow : Window
         ShowStatusTags = _showStatusTags,
         ShowParticipantPhoto = _showParticipantPhoto,
         ShowMiniSchedule = _showMiniSchedule,
-        ShowNotesPanel = _showNotesPanel,
         VisibleQuickActions = GetSelectedQuickActions(),
         AutoPrefillOnEmptyClipboard = AutoPrefillEntryCheckBox.IsChecked == true,
         DefaultEntryInitials = DefaultEntryInitialsTextBox.Text.Trim(),
@@ -157,7 +154,6 @@ public class SettingsWindowResult
     public bool ShowStatusTags { get; set; } = true;
     public bool ShowParticipantPhoto { get; set; } = true;
     public bool ShowMiniSchedule { get; set; } = true;
-    public bool ShowNotesPanel { get; set; }
     public List<string> VisibleQuickActions { get; set; } = QuickActionKeys.CreateDefaults().ToList();
     public bool AutoPrefillOnEmptyClipboard { get; set; }
     public string DefaultEntryInitials { get; set; } = string.Empty;
