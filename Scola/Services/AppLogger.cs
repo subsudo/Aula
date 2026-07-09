@@ -11,11 +11,12 @@ public static class AppLogger
     public static string LogDirectoryPath =>
         Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "AkteX",
+            "Aula",
             "logs");
 
+    // Eigene Datei (scola-*.log), damit die zwei Logger nicht in dieselbe Datei schreiben.
     public static string CurrentLogFilePath =>
-        Path.Combine(LogDirectoryPath, $"app-{DateTime.Now:yyyy-MM-dd}.log");
+        Path.Combine(LogDirectoryPath, $"scola-{DateTime.Now:yyyy-MM-dd}.log");
 
     public static void Info(string message)
     {
