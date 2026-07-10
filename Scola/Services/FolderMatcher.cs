@@ -10,6 +10,9 @@ public class FolderMatcher
     private const int MinRobustTokenCountForAutoMatch = 2;
     private static readonly Regex TokenRegex = new(@"[\p{L}\p{N}]+", RegexOptions.Compiled);
     private static readonly Regex MultiWhitespaceRegex = new(@"\s+", RegexOptions.Compiled);
+    // Spitznamen/Zusaetze in Klammern (z. B. "Mohammad (Mohi) Reza") beim Matchen ignorieren,
+    // sonst wird das Klammerwort zum Stoertoken und der Ordner wird nicht gefunden.
+    private static readonly Regex ParentheticalRegex = new(@"\([^)]*\)", RegexOptions.Compiled);
 
     private readonly string _primaryServerBasePath;
     private readonly string _secondaryServerBasePath;
@@ -311,7 +314,7 @@ public class FolderMatcher
             return new List<string>();
         }
 
-        return TokenRegex.Matches(name.ToLowerInvariant())
+        return TokenRegex.Matches(ParentheticalRegex.Replace(name, " ").ToLowerInvariant())
             .Select(m => m.Value.Trim())
             .Where(t => t.Length > 0)
             .ToList();
@@ -324,7 +327,7 @@ public class FolderMatcher
             return new List<string>();
         }
 
-        return TokenRegex.Matches(value)
+        return TokenRegex.Matches(ParentheticalRegex.Replace(value, " "))
             .Select(m => m.Value.Trim())
             .Where(t => t.Length > 0)
             .ToList();

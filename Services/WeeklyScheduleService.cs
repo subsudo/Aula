@@ -442,6 +442,9 @@ public sealed class WeeklyScheduleService
         }
 
         var candidates = Directory.GetFiles(schedulePath, "*.docx", SearchOption.TopDirectoryOnly)
+            // Word-Besitzer-/Sperrdateien ("~$KW_28.docx") sind keine echten Stundenplaene
+            // und lassen sich nicht als docx lesen ("End of Central Directory ..."). Ausschliessen.
+            .Where(path => !Path.GetFileName(path).StartsWith("~$", StringComparison.Ordinal))
             .Select(ParseWeekCandidate)
             .Where(candidate => candidate is not null)
             .Cast<WeekFileCandidate>()
