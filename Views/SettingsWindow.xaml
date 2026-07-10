@@ -410,6 +410,17 @@
                             HorizontalAlignment="Left"
                             Style="{StaticResource LinkButtonStyle}"
                             Click="OpenLogFolderButton_OnClick" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <TextBlock x:Name="UpdateStatusTextBlock"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,10,0"
+                                   Foreground="{DynamicResource Brush.SecondaryText}"
+                                   FontSize="11.5" />
+                        <Button x:Name="CheckUpdatesButton"
+                                Content="Nach Updates suchen"
+                                Style="{StaticResource LinkButtonStyle}"
+                                Click="CheckUpdatesButton_OnClick" />
+                    </StackPanel>
                 </Grid>
 
             </StackPanel>

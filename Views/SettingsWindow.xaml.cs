@@ -140,6 +140,25 @@ public partial class SettingsWindow : Window
         DialogResult = false;
     }
 
+    private async void CheckUpdatesButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (Owner is not MainWindow main)
+        {
+            return;
+        }
+
+        CheckUpdatesButton.IsEnabled = false;
+        UpdateStatusTextBlock.Text = "Suche nach Updates …";
+        try
+        {
+            UpdateStatusTextBlock.Text = await main.CheckForUpdatesInteractiveAsync(this);
+        }
+        finally
+        {
+            CheckUpdatesButton.IsEnabled = true;
+        }
+    }
+
 }
 
 public class SettingsWindowResult

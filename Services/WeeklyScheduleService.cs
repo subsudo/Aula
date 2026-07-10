@@ -23,11 +23,41 @@ public sealed class WeeklyScheduleService
     private readonly string _cacheBackupPath;
     private readonly Dictionary<string, WeeklyScheduleCacheEntryInternal> _cache;
 
+    // Rueckfall auf den zuletzt geladenen Plan, solange die aktuelle ISO-Woche laeuft.
+    private WeeklyScheduleDocument? _lastGoodDocument;
+    private int _lastGoodIsoYear;
+    private int _lastGoodIsoWeek;
+
     public WeeklyScheduleService(string cachePath, string cacheBackupPath)
     {
         _cachePath = cachePath;
         _cacheBackupPath = cacheBackupPath;
         _cache = LoadCache();
+    }
+
+    private static (int Year, int Week) CurrentIsoWeek()
+    {
+        var today = DateTime.Today;
+        return (ISOWeek.GetYear(today), ISOWeek.GetWeekOfYear(today));
+    }
+
+    /// <summary>Gibt den zuletzt geladenen Plan zurueck, wenn die aktuelle ISO-Woche noch
+    /// laeuft (Quelle voruebergehend nicht erreichbar). Sonst null.</summary>
+    private WeeklyScheduleDocument? TryGetCurrentWeekFallback()
+    {
+        lock (_syncRoot)
+        {
+            if (_lastGoodDocument is { Slots.Count: > 0 })
+            {
+                var (year, week) = CurrentIsoWeek();
+                if (_lastGoodIsoYear == year && _lastGoodIsoWeek == week)
+                {
+                    return _lastGoodDocument;
+                }
+            }
+        }
+
+        return null;
     }
 
     public void ClearCache()
@@ -36,6 +66,9 @@ public sealed class WeeklyScheduleService
         lock (_syncRoot)
         {
             _cache.Clear();
+            _lastGoodDocument = null;
+            _lastGoodIsoYear = 0;
+            _lastGoodIsoWeek = 0;
             documentToPersist = CreateCacheDocumentUnsafe();
         }
 
@@ -58,15 +91,33 @@ public sealed class WeeklyScheduleService
         ambiguousLines = new List<string>();
         matches = new List<WeeklyScheduleParticipantSlotDiagnostics>();
         var resolvedSchedulePath = ResolveScheduleDocumentPath(schedulePath);
+
+        WeeklyScheduleDocument document;
         if (string.IsNullOrWhiteSpace(resolvedSchedulePath))
         {
-            return CreateUnavailableSummary("Kein Stundenplan");
-        }
+            var fallback = TryGetCurrentWeekFallback();
+            if (fallback is null)
+            {
+                return CreateUnavailableSummary("Kein Stundenplan");
+            }
 
-        var document = ReadDocument(resolvedSchedulePath);
-        if (document.Slots.Count == 0)
+            AppLogger.Info("Stundenplan: Quelle nicht erreichbar – nutze Wochen-Cache weiter.");
+            document = fallback;
+        }
+        else
         {
-            return CreateUnavailableSummary("Kein Stundenplan");
+            document = ReadDocument(resolvedSchedulePath);
+            if (document.Slots.Count == 0)
+            {
+                var fallback = TryGetCurrentWeekFallback();
+                if (fallback is null)
+                {
+                    return CreateUnavailableSummary("Kein Stundenplan");
+                }
+
+                AppLogger.Info("Stundenplan: Quelle leer/ungueltig – nutze Wochen-Cache weiter.");
+                document = fallback;
+            }
         }
 
         var matcher = new ParticipantAliasMatcher(participants);
@@ -486,6 +537,11 @@ public sealed class WeeklyScheduleService
             return new Dictionary<string, WeeklyScheduleCacheEntryInternal>(StringComparer.OrdinalIgnoreCase);
         }
 
+        // Wochen-Rueckfall aus dem Cache uebernehmen (fehlt in alten Dateien -> null/0).
+        _lastGoodDocument = document.LastGoodDocument;
+        _lastGoodIsoYear = document.LastGoodIsoYear;
+        _lastGoodIsoWeek = document.LastGoodIsoWeek;
+
         return document.Entries
             .Where(entry => !string.IsNullOrWhiteSpace(entry.DocumentPath))
             .ToDictionary(
@@ -508,6 +564,16 @@ public sealed class WeeklyScheduleService
                 fileInfo.Length,
                 DateTime.UtcNow,
                 document);
+
+            // Erfolgreich geladener, nicht-leerer Plan = Wochen-Rueckfall fuer die aktuelle ISO-Woche.
+            if (document.Slots.Count > 0)
+            {
+                var (year, week) = CurrentIsoWeek();
+                _lastGoodDocument = document;
+                _lastGoodIsoYear = year;
+                _lastGoodIsoWeek = week;
+            }
+
             documentToPersist = CreateCacheDocumentUnsafe();
         }
 
@@ -529,7 +595,10 @@ public sealed class WeeklyScheduleService
                     CachedAtUtc = entry.Value.CachedAtUtc,
                     Document = entry.Value.Document
                 })
-                .ToList()
+                .ToList(),
+            LastGoodDocument = _lastGoodDocument,
+            LastGoodIsoYear = _lastGoodIsoYear,
+            LastGoodIsoWeek = _lastGoodIsoWeek
         };
     }
 
@@ -1374,6 +1443,12 @@ public sealed class WeeklyScheduleCacheDocument
 {
     public int Version { get; set; }
     public List<WeeklyScheduleCacheEntry> Entries { get; set; } = new();
+
+    // Zuletzt erfolgreich geladener Stundenplan + dessen ISO-Woche. Dient als
+    // Rueckfall, wenn die Quelle verschwindet, die Woche aber noch laeuft.
+    public WeeklyScheduleDocument? LastGoodDocument { get; set; }
+    public int LastGoodIsoYear { get; set; }
+    public int LastGoodIsoWeek { get; set; }
 }
 
 public sealed class WeeklyScheduleCacheEntry

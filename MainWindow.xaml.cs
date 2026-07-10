@@ -127,6 +127,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         ListPanelBorder.SizeChanged += (_, _) => UpdateLayoutAlignment();
         DetailPanel.EditHintsRequested += (_, args) => EditParticipantHints(args.Participant);
         Deactivated += MainWindow_OnDeactivated;
+        PreviewKeyDown += MainWindow_OnPreviewKeyDown;
         Closing += MainWindow_OnClosing;
         Closed += MainWindow_OnClosed;
         WordBusyGuard.BusyStateChanged += WordBusyGuard_OnBusyStateChanged;
@@ -935,6 +936,33 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         _suppressSearchResultsUntilTyping = false;
         SearchTextBox.Clear();
         SearchTextBox.Focus();
+    }
+
+    private void MainWindow_OnPreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        // Ctrl+F: Suche fokussieren und markieren.
+        if (e.Key == Key.F && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+        {
+            SearchTextBox.Focus();
+            SearchTextBox.SelectAll();
+            e.Handled = true;
+            return;
+        }
+
+        // Esc: offenes Such-Dropdown schliessen bzw. Suchtext leeren – aber nur, wenn das
+        // Dropdown offen ist oder der Fokus in der Suche liegt (sonst nichts anfassen,
+        // damit Esc in anderen Feldern/Dialogen frei bleibt).
+        if (e.Key == Key.Escape)
+        {
+            var searchFocused = SearchTextBox.IsKeyboardFocusWithin;
+            if (SearchResultsPopup.IsOpen || (searchFocused && !string.IsNullOrEmpty(SearchTextBox.Text)))
+            {
+                _suppressSearchResultsUntilTyping = false;
+                SearchTextBox.Clear();
+                UpdateSearchUi();
+                e.Handled = true;
+            }
+        }
     }
 
     private async void ArchiveSearchButton_OnClick(object sender, RoutedEventArgs e)
@@ -2274,6 +2302,39 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 MessageBoxImage.Error);
             return false;
         }
+    }
+
+    /// <summary>
+    /// Manueller Update-Check (aus den Einstellungen). Nutzt denselben Flow wie der
+    /// Start-Check, ignoriert aber das "Später"-Snoozing. Gibt einen Status-Text zurueck
+    /// (leer, wenn der Update-Dialog uebernommen hat).
+    /// </summary>
+    public async Task<string> CheckForUpdatesInteractiveAsync(Window owner)
+    {
+        GitHubReleaseInfo? release;
+        try
+        {
+            release = await _appUpdateService.GetAvailableUpdateAsync(CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            AppLogger.Warn($"Manueller Update-Check fehlgeschlagen: {ex.Message}");
+            return "Prüfung nicht möglich (keine Verbindung?).";
+        }
+
+        if (release is null)
+        {
+            return $"Aula ist aktuell (v{_appUpdateService.CurrentVersionDisplay}).";
+        }
+
+        var dialog = new AppUpdateWindow(_appUpdateService, release) { Owner = owner };
+        var result = dialog.ShowDialog();
+        if (result == true && dialog.DownloadedUpdate is not null)
+        {
+            TryStartDownloadedUpdate(dialog.DownloadedUpdate);
+        }
+
+        return string.Empty;
     }
 
     private const double BatchPanelWidth = 380;
