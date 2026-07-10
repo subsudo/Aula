@@ -1,5 +1,9 @@
 # Aula — vereinte „best-of"-App aus Acta + Scola
 
+> **Hinweis:** Dieses Dokument beschreibt das **Design/den Plan**, nicht den
+> Tagesstand. Aktueller Stand, offene Punkte und nächste Schritte stehen in
+> [DEVLOG.md](DEVLOG.md). Der folgende Status-Absatz ist historisch (Stufe 1).
+
 > Status: **Stufe 1 fertig** — Acta als Basis kopiert, baut als eigenständige App
 > `Aula.exe`. Die Original-Apps *Acta* (`XHub\XHub\`) und *Scola Flash*
 > (`Scola Flash\`) bleiben **unangetastet**. Aula liegt separat in `XHub\Aula\`.
