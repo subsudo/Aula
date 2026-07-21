@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using XHub.Models;
+using XHub.Shared;
 using XHub.Services;
 
 namespace XHub;
@@ -84,6 +85,10 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        // Aula benoetigt keine GPU-intensiven Effekte. Software-Rendering vermeidet
+        // terminierende WPF-Renderthread-Ausfaelle durch Treiber/DirectX-Probleme.
+        RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
+
         if (!TryAcquireSingleInstance())
         {
             SignalRunningInstance();
@@ -112,6 +117,7 @@ public partial class App : Application
         WeeklyScheduleDiagnosticsBackupPath = Path.Combine(diagnosticsDirectory, "weekly-schedule-diagnostics.bak");
 
         RegisterGlobalExceptionLogging();
+        AppLogger.Info($"WPF-Rendering: ProcessRenderMode={RenderOptions.ProcessRenderMode}, RenderTier={RenderCapability.Tier >> 16}.");
 
         var configService = new AppConfigService(SettingsPath, SettingsBackupPath, CreateDefaultConfig());
         Config = configService.Load();
@@ -122,6 +128,7 @@ public partial class App : Application
         var prefsService = new UserPrefsService(UserPrefsPath, UserPrefsBackupPath);
         UserPrefs = prefsService.Load();
         NormalizeUserPrefs(UserPrefs, hasExistingUserPrefs);
+        WordDiagnosticsSettings.SetEnabled(UserPrefs.EnableWordLifecycleLogging);
         ApplyTheme(false);
         ApplyUiScale(UserPrefs.UiScaleLevel);
         TryPersistNormalizedUserPrefs(prefsService);

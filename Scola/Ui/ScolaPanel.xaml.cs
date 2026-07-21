@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using XHub.Models;
 using VM = VerlaufsakteApp.Models;
 
 namespace XHub.Scola;
@@ -19,6 +20,7 @@ public partial class ScolaPanel : UserControl
 {
     private readonly ClassImportService _import = new();
     private readonly ObservableCollection<VM.Participant> _tray = new();
+    private IReadOnlyList<ParticipantIndexEntry> _participantIndex = Array.Empty<ParticipantIndexEntry>();
 
     public ScolaPanel()
     {
@@ -78,6 +80,12 @@ public partial class ScolaPanel : UserControl
 
     /// <summary>Aktuelle TN im Tray (fuer den Batch-Bereich).</summary>
     public IReadOnlyList<VM.Participant> TrayParticipants => _tray;
+
+    /// <summary>Uebernimmt denselben TN-Index, den auch die Acta-Seite verwendet.</summary>
+    public void SetParticipantIndex(IReadOnlyList<ParticipantIndexEntry> entries)
+    {
+        _participantIndex = entries.ToList();
+    }
 
     /// <summary>Wird ausgeloest, wenn am Tray-Chip eine Word-Aktion angefordert wird.</summary>
     public event EventHandler<TrayQuickActionEventArgs>? QuickActionRequested;
@@ -317,18 +325,23 @@ public partial class ScolaPanel : UserControl
             return;
         }
 
-        var config = App.Config;
-        var serverBasePath = config.ServerBasePath;
-        var useSecondary = config.UseSecondaryServerBasePath;
-        var secondary = config.SecondaryServerBasePath;
-        var keyword = config.VerlaufsakteKeyword;
+        var participantIndex = _participantIndex.ToList();
+        if (participantIndex.Count == 0)
+        {
+            MessageBox.Show(
+                "Der Teilnehmenden-Index ist noch nicht bereit. Bitte den Index aktualisieren und erneut importieren.",
+                "Klassen-Import",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            return;
+        }
 
         ImportButton.IsEnabled = false;
         ImportButton.Content = "Importiere…";
         try
         {
             var participants = await Task.Run(() =>
-                _import.Import(text, serverBasePath, useSecondary, secondary, keyword));
+                _import.Import(text, participantIndex));
 
             _tray.Clear();
             foreach (var participant in participants)

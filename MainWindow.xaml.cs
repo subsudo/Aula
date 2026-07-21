@@ -12,6 +12,7 @@ using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using Microsoft.Win32;
 using XHub.Models;
+using XHub.Shared;
 using XHub.Services;
 using XHub.Views;
 
@@ -168,6 +169,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 _mainIndexEntries = withDummies;
             }
 #endif
+            ScolaPanel.SetParticipantIndex(_mainIndexEntries);
             RefreshParticipantHintsForEntries(_mainIndexEntries);
             UpdateArchiveAvailability();
             RebuildCombinedIndex();
@@ -1547,6 +1549,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         App.UserPrefs.ShowMiniSchedule = dialog.Result.ShowMiniSchedule;
         App.UserPrefs.AutoPrefillOnEmptyClipboard = dialog.Result.AutoPrefillOnEmptyClipboard;
         App.UserPrefs.DefaultEntryInitials = dialog.Result.DefaultEntryInitials;
+        App.UserPrefs.EnableWordLifecycleLogging = dialog.Result.EnableWordLifecycleLogging;
+        WordDiagnosticsSettings.SetEnabled(App.UserPrefs.EnableWordLifecycleLogging);
         App.ApplyTheme(dialog.Result.IsDarkTheme);
         UpdateDetailPanelState();
         App.SaveUserPrefs();

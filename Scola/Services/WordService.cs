@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
+using XHub.Shared;
 using VerlaufsakteApp.Models;
 
 namespace VerlaufsakteApp.Services;
@@ -134,9 +135,7 @@ public class WordService
 
     private static bool IsWordLifecycleLoggingEnabled()
     {
-        // Aula: ausfuehrliches Word-Lifecycle-Logging vorerst deaktiviert
-        // (entkoppelt von Scolas App.UserPrefs). Funktional ohne Auswirkung auf den Batch.
-        return false;
+        return WordDiagnosticsSettings.Enabled;
     }
 
     private static WordLifecycleOperationContext BeginWordLifecycleOperation(string operationName, string? documentPath, string? bookmarkName = null)
@@ -151,7 +150,8 @@ public class WordService
 
         if (IsWordLifecycleLoggingEnabled())
         {
-            AppLogger.Debug(
+            LogWordLifecycle(
+                context,
                 $"WordLifecycle[{context.OperationId}] Begin Operation='{operationName}', Doc='{SanitizeForLog(context.DocumentPath)}', Bookmark='{SanitizeForLog(context.BookmarkName)}'.");
             LogWordLifecycleProcessSnapshot(context, "BeforeOperation");
         }
@@ -168,11 +168,11 @@ public class WordService
 
         if (context is null)
         {
-            AppLogger.Debug($"WordLifecycle {message}");
+            AppLogger.Info($"WordLifecycle {message}");
             return;
         }
 
-        AppLogger.Debug($"WordLifecycle[{context.OperationId}:{context.OperationName}] {message}");
+        AppLogger.Info($"WordLifecycle[{context.OperationId}:{context.OperationName}] {message}");
     }
 
     private static void LogWordLifecycleAppState(

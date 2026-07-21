@@ -14,4 +14,5 @@ public class UserPrefs
     public bool ShowMiniSchedule { get; set; } = true;
     public bool AutoPrefillOnEmptyClipboard { get; set; }
     public string DefaultEntryInitials { get; set; } = string.Empty;
+    public bool EnableWordLifecycleLogging { get; set; }
 }

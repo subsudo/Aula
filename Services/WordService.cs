@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows;
+using XHub.Shared;
 
 namespace XHub.Services;
 
@@ -14,6 +15,7 @@ public class WordService
     private const int ClipboardReadRetryCount = 3;
     private const int ClipboardReadRetryBaseDelayMs = 60;
     public const int NativeOpenCooldownMs = 400;
+    private static int _wordLifecycleOperationSequence;
 
     public static bool IsWordAvailable => Type.GetTypeFromProgID("Word.Application") is not null;
 
@@ -103,6 +105,239 @@ public class WordService
             lastException);
     }
 
+    private static int BeginWordLifecycleOperation(string operationName, string docPath, string? bookmarkName = null)
+    {
+        if (!WordDiagnosticsSettings.Enabled)
+        {
+            return 0;
+        }
+
+        var operationId = Interlocked.Increment(ref _wordLifecycleOperationSequence);
+        AppLogger.Info(
+            $"XHub.WordLifecycle[{operationId}] Begin Operation='{operationName}', Doc='{SanitizeForLog(docPath)}', Bookmark='{SanitizeForLog(bookmarkName)}'.");
+        LogWordProcessSnapshot(operationId, "BeforeOperation");
+        return operationId;
+    }
+
+    private static void LogWordState(
+        dynamic? app,
+        int operationId,
+        string stage,
+        string targetDocPath,
+        bool? wasCreatedHere = null,
+        int? initialUnsavedDocumentCount = null,
+        bool? openedHere = null,
+        bool? operationSucceeded = null,
+        bool? shouldQuitCreatedApp = null)
+    {
+        if (!WordDiagnosticsSettings.Enabled)
+        {
+            return;
+        }
+
+        if (app is null)
+        {
+            LogWordProcessSnapshot(operationId, stage);
+            return;
+        }
+
+        dynamic? docs = null;
+        try
+        {
+            dynamic wordApp = app;
+            docs = wordApp.Documents;
+            var documentCount = (int)docs.Count;
+            var visible = TryReadBool(() => (bool)wordApp.Visible);
+            var userControl = TryReadBool(() => (bool)wordApp.UserControl);
+            var hwnd = TryReadInt64(() => Convert.ToInt64(wordApp.Hwnd));
+
+            AppLogger.Info(
+                $"XHub.WordLifecycle[{operationId}] Stage='{stage}', Target='{SanitizeForLog(targetDocPath)}', " +
+                $"WasCreatedHere={FormatOptional(wasCreatedHere)}, InitialUnsaved={FormatOptional(initialUnsavedDocumentCount)}, " +
+                $"OpenedHere={FormatOptional(openedHere)}, OperationSucceeded={FormatOptional(operationSucceeded)}, " +
+                $"ShouldQuitCreatedApp={FormatOptional(shouldQuitCreatedApp)}, Visible={FormatOptional(visible)}, " +
+                $"UserControl={FormatOptional(userControl)}, Hwnd={FormatOptional(hwnd)}, OpenDocs={documentCount}.");
+
+            for (var i = 1; i <= documentCount; i++)
+            {
+                dynamic? doc = null;
+                try
+                {
+                    doc = docs[i];
+                    var name = TryReadString(() => doc.Name as string) ?? string.Empty;
+                    var fullName = TryReadString(() => doc.FullName as string) ?? string.Empty;
+                    var path = TryReadString(() => doc.Path as string) ?? string.Empty;
+                    var saved = TryReadBool(() => (bool)doc.Saved);
+                    var readOnly = TryReadBool(() => (bool)doc.ReadOnly);
+                    var isUnsaved = string.IsNullOrWhiteSpace(path);
+
+                    AppLogger.Info(
+                        $"XHub.WordLifecycle[{operationId}] Stage='{stage}', DocIndex={i}, " +
+                        $"Name='{SanitizeForLog(name)}', FullName='{SanitizeForLog(fullName)}', Path='{SanitizeForLog(path)}', " +
+                        $"Saved={FormatOptional(saved)}, ReadOnly={FormatOptional(readOnly)}, IsUnsaved={isUnsaved}.");
+                }
+                catch (Exception ex)
+                {
+                    AppLogger.Warn(
+                        $"XHub.WordLifecycle[{operationId}] Stage='{stage}', Dokument {i} konnte nicht gelesen werden " +
+                        $"({ex.GetType().Name}): {ex.Message}");
+                }
+                finally
+                {
+                    ReleaseComObject(doc);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            AppLogger.Warn(
+                $"XHub.WordLifecycle[{operationId}] Stage='{stage}', Word-Dokumentstatus konnte nicht gelesen werden " +
+                $"({ex.GetType().Name}): {ex.Message}");
+        }
+        finally
+        {
+            ReleaseComObject(docs);
+        }
+
+        LogWordProcessSnapshot(operationId, stage);
+        LogWordWindowSnapshot(operationId, stage);
+    }
+
+    private static void LogWordProcessSnapshot(int operationId, string stage)
+    {
+        Process[] processes;
+        try
+        {
+            processes = Process.GetProcessesByName("WINWORD");
+        }
+        catch (Exception ex)
+        {
+            AppLogger.Warn($"XHub.WordLifecycle[{operationId}] Stage='{stage}', WINWORD-Prozesse konnten nicht gelesen werden ({ex.Message})");
+            return;
+        }
+
+        try
+        {
+            AppLogger.Info($"XHub.WordLifecycle[{operationId}] Stage='{stage}', WinWordProcessCount={processes.Length}.");
+            foreach (var process in processes)
+            {
+                try
+                {
+                    var startTime = TryReadDateTime(() => process.StartTime.ToUniversalTime());
+                    AppLogger.Info(
+                        $"XHub.WordLifecycle[{operationId}] Stage='{stage}', WinWordPid={process.Id}, " +
+                        $"MainWindowHandle={process.MainWindowHandle.ToInt64()}, Responding={FormatOptional(TryReadBool(() => process.Responding))}, " +
+                        $"StartTimeUtc={FormatOptional(startTime?.ToString("O"))}, MainWindowTitle='{SanitizeForLog(TryReadString(() => process.MainWindowTitle))}'.");
+                }
+                catch (Exception ex)
+                {
+                    AppLogger.Warn($"XHub.WordLifecycle[{operationId}] Stage='{stage}', WINWORD-Prozessstatus konnte nicht gelesen werden ({ex.Message})");
+                }
+                finally
+                {
+                    process.Dispose();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            AppLogger.Warn($"XHub.WordLifecycle[{operationId}] Stage='{stage}', WINWORD-Snapshot fehlgeschlagen ({ex.Message})");
+        }
+    }
+
+    private static void LogWordWindowSnapshot(int operationId, string stage)
+    {
+        try
+        {
+            var processIds = Process.GetProcessesByName("WINWORD")
+                .Select(process =>
+                {
+                    var id = process.Id;
+                    process.Dispose();
+                    return id;
+                })
+                .ToHashSet();
+            var windows = SnapshotWordTopLevelWindows(processIds);
+
+            AppLogger.Info(
+                $"XHub.WordLifecycle[{operationId}] Stage='{stage}', WindowSnapshotCount={windows.Count}, " +
+                $"DiagnosticPidScope='{string.Join(",", processIds.OrderBy(id => id))}'.");
+            foreach (var window in windows)
+            {
+                AppLogger.Info(
+                    $"XHub.WordLifecycle[{operationId}] Stage='{stage}', Hwnd=0x{window.Hwnd.ToInt64():X}, " +
+                    $"Pid={window.ProcessId}, Title='{SanitizeForLog(window.Title)}'.");
+            }
+        }
+        catch (Exception ex)
+        {
+            AppLogger.Warn($"XHub.WordLifecycle[{operationId}] Stage='{stage}', Word-Fenster konnten nicht gelesen werden ({ex.Message})");
+        }
+    }
+
+    private static string? TryReadString(Func<string?> getter)
+    {
+        try
+        {
+            return getter();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static bool? TryReadBool(Func<bool> getter)
+    {
+        try
+        {
+            return getter();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static long? TryReadInt64(Func<long> getter)
+    {
+        try
+        {
+            return getter();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static DateTime? TryReadDateTime(Func<DateTime> getter)
+    {
+        try
+        {
+            return getter();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static string FormatOptional(object? value)
+    {
+        return value?.ToString() ?? "n/a";
+    }
+
+    private static string SanitizeForLog(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? string.Empty
+            : value.Replace("\r", " ", StringComparison.Ordinal)
+                .Replace("\n", " ", StringComparison.Ordinal)
+                .Replace("\t", " ", StringComparison.Ordinal)
+                .Trim();
+    }
+
     public void OpenDocumentAtBookmark(string docPath, string bookmarkName)
     {
         AppLogger.Info($"XHub.Word.OpenDocumentAtBookmark start. Doc='{docPath}', Bookmark='{bookmarkName}'");
@@ -129,6 +364,7 @@ public class WordService
         var shouldQuitCreatedApp = false;
         var openedHere = false;
         var operationSucceeded = false;
+        var lifecycleOperationId = BeginWordLifecycleOperation(nameof(OpenDocumentAtBookmark), docPath, bookmarkName);
 
         try
         {
@@ -137,11 +373,14 @@ public class WordService
             shouldQuitCreatedApp = wordApp.WasCreatedHere;
 
             AppLogger.Info($"XHub.Word.Instance attached={!wordApp.WasCreatedHere}, initialUnsaved={wordApp.InitialUnsavedDocumentCount}");
+            LogWordState(app, lifecycleOperationId, "AfterCreateOrAttach", docPath, wordApp.WasCreatedHere, wordApp.InitialUnsavedDocumentCount);
 
             doc = OpenOrGetDocument(app, docPath, out openedHere);
             AppLogger.Info($"XHub.Word.Document openedHere={openedHere}. Doc='{docPath}'");
+            LogWordState(app, lifecycleOperationId, "AfterOpenOrGetDocument", docPath, openedHere: openedHere);
 
             CloseTransientEmptyDocuments(app, docPath, wordApp.InitialUnsavedDocumentCount);
+            LogWordState(app, lifecycleOperationId, "AfterCloseTransientEmptyDocuments", docPath);
             EnsureWordUiState(app);
             EnsureDocumentIsWritableForBookmark(doc);
 
@@ -170,6 +409,7 @@ public class WordService
         }
         finally
         {
+            LogWordState(app, lifecycleOperationId, "FinallyBeforeCleanup", docPath, openedHere: openedHere, operationSucceeded: operationSucceeded, shouldQuitCreatedApp: shouldQuitCreatedApp);
             if (!operationSucceeded && openedHere && !shouldQuitCreatedApp)
             {
                 TryCloseDocument(doc);
@@ -221,6 +461,7 @@ public class WordService
         var shouldQuitCreatedApp = false;
         var openedHere = false;
         var operationSucceeded = false;
+        var lifecycleOperationId = BeginWordLifecycleOperation(nameof(InsertClipboardToStructuredEntryTable), docPath, target.TableBookmarkName);
 
         try
         {
@@ -229,11 +470,14 @@ public class WordService
             shouldQuitCreatedApp = wordApp.WasCreatedHere;
 
             AppLogger.Info($"XHub.Word.Entry instance attached={!wordApp.WasCreatedHere}, initialUnsaved={wordApp.InitialUnsavedDocumentCount}");
+            LogWordState(app, lifecycleOperationId, "AfterCreateOrAttach", docPath, wordApp.WasCreatedHere, wordApp.InitialUnsavedDocumentCount);
 
             doc = OpenOrGetDocument(app, docPath, out openedHere);
             AppLogger.Info($"XHub.Word.Entry document openedHere={openedHere}. Doc='{docPath}'");
+            LogWordState(app, lifecycleOperationId, "AfterOpenOrGetDocument", docPath, openedHere: openedHere);
 
             CloseTransientEmptyDocuments(app, docPath, wordApp.InitialUnsavedDocumentCount);
+            LogWordState(app, lifecycleOperationId, "AfterCloseTransientEmptyDocuments", docPath);
             EnsureWordVisibleForEntry(app);
             EnsureDocumentIsWritableForBookmark(doc);
 
@@ -320,6 +564,7 @@ public class WordService
         }
         finally
         {
+            LogWordState(app, lifecycleOperationId, "FinallyBeforeCleanup", docPath, openedHere: openedHere, operationSucceeded: operationSucceeded, shouldQuitCreatedApp: shouldQuitCreatedApp);
             ReleaseComObject(targetTable);
             if (!operationSucceeded && openedHere && !shouldQuitCreatedApp)
             {

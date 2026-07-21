@@ -50,6 +50,7 @@ public partial class SettingsWindow : Window
         EntryLbActionCheckBox.IsChecked = config.VisibleQuickActions.Contains(QuickActionKeys.EntryLb, StringComparer.OrdinalIgnoreCase);
         AutoPrefillEntryCheckBox.IsChecked = prefs.AutoPrefillOnEmptyClipboard;
         DefaultEntryInitialsTextBox.Text = prefs.DefaultEntryInitials ?? string.Empty;
+        EnableWordDiagnosticsCheckBox.IsChecked = prefs.EnableWordLifecycleLogging;
     }
 
     private void SettingsWindow_OnLoaded(object sender, RoutedEventArgs e)
@@ -77,6 +78,7 @@ public partial class SettingsWindow : Window
         VisibleQuickActions = GetSelectedQuickActions(),
         AutoPrefillOnEmptyClipboard = AutoPrefillEntryCheckBox.IsChecked == true,
         DefaultEntryInitials = DefaultEntryInitialsTextBox.Text.Trim(),
+        EnableWordLifecycleLogging = EnableWordDiagnosticsCheckBox.IsChecked == true,
         RequestedAction = _requestedAction
     };
 
@@ -176,6 +178,7 @@ public class SettingsWindowResult
     public List<string> VisibleQuickActions { get; set; } = QuickActionKeys.CreateDefaults().ToList();
     public bool AutoPrefillOnEmptyClipboard { get; set; }
     public string DefaultEntryInitials { get; set; } = string.Empty;
+    public bool EnableWordLifecycleLogging { get; set; }
     public SettingsWindowAction RequestedAction { get; set; } = SettingsWindowAction.Save;
 }
 
