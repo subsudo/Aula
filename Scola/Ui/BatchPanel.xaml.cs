@@ -317,6 +317,16 @@ public partial class BatchPanel : UserControl
         catch (Exception ex)
         {
             BiTodoStatus.Text = $"Fehler: {ex.Message}";
+            var message = $"Der Sammellauf konnte nicht abgeschlossen werden.\n\n{ex.Message}";
+            var owner = Window.GetWindow(this);
+            if (owner is not null)
+            {
+                MessageBox.Show(owner, message, "BI: To-dos fehlgeschlagen", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                MessageBox.Show(message, "BI: To-dos fehlgeschlagen", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         finally
         {

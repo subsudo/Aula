@@ -9,10 +9,10 @@
     <AssemblyName>Aula</AssemblyName>
     <Product>Aula</Product>
     <Title>Aula</Title>
-    <Version>0.1.7</Version>
-    <AssemblyVersion>0.1.7.0</AssemblyVersion>
-    <FileVersion>0.1.7.0</FileVersion>
-    <InformationalVersion>0.1.7</InformationalVersion>
+    <Version>0.1.9</Version>
+    <AssemblyVersion>0.1.9.0</AssemblyVersion>
+    <FileVersion>0.1.9.0</FileVersion>
+    <InformationalVersion>0.1.9</InformationalVersion>
     <ApplicationIcon>Assets\Aula.ico</ApplicationIcon>
     <!-- Single-File-Bundle komprimieren (halbiert die Exe; minimal langsamerer Kaltstart) -->
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>

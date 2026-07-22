@@ -24,6 +24,7 @@ public class WordService
     private static readonly TimeSpan BiTodoTempCleanupMaxAge = TimeSpan.FromHours(1);
     private static readonly TimeSpan BiTodoHiddenQuitWaitTimeout = TimeSpan.FromSeconds(3);
     private const int BiTodoInitialsColor = 0x45B0E1;
+    private const int WdFormatXmlDocument = 12;
     private const int HiddenWordProcessDiscoveryRetryCount = 5;
     private const int HiddenWordProcessDiscoveryRetryDelayMs = 100;
     private const int WordAttachRetryCount = 3;
@@ -2009,7 +2010,7 @@ public class WordService
 
         var tempPath = Path.Combine(targetDirectory, $"{BiTodoTempFilePrefix}{Guid.NewGuid():N}.docx");
         LogWordLifecycle(context, $"SaveBiTodoResultDocumentToTemp: SaveAs2 nach '{SanitizeForLog(tempPath)}'.");
-        resultDoc.SaveAs2(tempPath);
+        resultDoc.SaveAs2(FileName: tempPath, FileFormat: WdFormatXmlDocument);
         return tempPath;
     }
 

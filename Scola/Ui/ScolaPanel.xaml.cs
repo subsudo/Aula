@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using XHub.Models;
 using VM = VerlaufsakteApp.Models;
@@ -20,12 +22,16 @@ public partial class ScolaPanel : UserControl
 {
     private readonly ClassImportService _import = new();
     private readonly ObservableCollection<VM.Participant> _tray = new();
+    private ICollectionView? _trayView;
     private IReadOnlyList<ParticipantIndexEntry> _participantIndex = Array.Empty<ParticipantIndexEntry>();
+    private bool _showOnlyPresent;
 
     public ScolaPanel()
     {
         InitializeComponent();
-        TrayItems.ItemsSource = _tray;
+        _trayView = CollectionViewSource.GetDefaultView(_tray);
+        _trayView.Filter = ShouldShowParticipant;
+        TrayItems.ItemsSource = _trayView;
         Loaded += ScolaPanel_OnLoaded;
     }
 
@@ -224,7 +230,23 @@ public partial class ScolaPanel : UserControl
         }
     }
 
-    private void Presence_OnChanged(object sender, RoutedEventArgs e) => UpdateTrayStatus();
+    private void Presence_OnChanged(object sender, RoutedEventArgs e)
+    {
+        _trayView?.Refresh();
+        UpdateTrayStatus();
+    }
+
+    private void PresentOnlyToggle_OnChanged(object sender, RoutedEventArgs e)
+    {
+        _showOnlyPresent = PresentOnlyToggle.IsChecked == true;
+        _trayView?.Refresh();
+        UpdateTrayStatus();
+    }
+
+    private bool ShouldShowParticipant(object item)
+    {
+        return !_showOnlyPresent || item is VM.Participant { IsPresent: true };
+    }
 
     private void ClearImport_OnClick(object sender, RoutedEventArgs e) => ImportInput.Clear();
 
@@ -239,7 +261,10 @@ public partial class ScolaPanel : UserControl
     {
         var total = _tray.Count;
         var present = _tray.Count(p => p.IsPresent);
-        StatusText.Text = $"Auswertung: {total} Einträge ({present} anwesend, {total - present} abwesend)";
+        var absent = total - present;
+        StatusText.Text = _showOnlyPresent
+            ? $"Auswertung: {present} sichtbar ({absent} ausgeblendet)"
+            : $"Auswertung: {total} Einträge ({present} anwesend, {absent} abwesend)";
     }
 
     // --- Drop von der Acta-Seite: TN aus Actas Liste in den Tray ziehen ---

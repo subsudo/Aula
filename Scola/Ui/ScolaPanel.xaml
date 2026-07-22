@@ -201,6 +201,39 @@
             </Setter>
         </Style>
 
+        <!-- Kompakter Ansichtsfilter in der festen Fusszeile -->
+        <Style x:Key="L.FilterToggle" TargetType="ToggleButton">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{StaticResource L.TextSecondary}" />
+            <Setter Property="FontSize" Value="10.5" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="MinWidth" Value="112" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Bg" Background="Transparent"
+                                BorderBrush="Transparent" BorderThickness="1"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              TextBlock.Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{StaticResource L.Hover}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{StaticResource L.ToggleActive}" />
+                                <Setter TargetName="Bg" Property="BorderBrush" Value="{StaticResource L.Border}" />
+                                <Setter Property="Foreground" Value="{StaticResource L.Text}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- TN-Kachel-Vorlage -->
         <DataTemplate x:Key="L.ChipTemplate">
             <Border x:Name="ChipBorder" Style="{StaticResource L.Chip}" Cursor="Hand"
@@ -351,10 +384,25 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBlock x:Name="StatusText" Text="Auswertung: 0 Einträge (0 anwesend, 0 abwesend)"
-                               FontSize="11" Foreground="{StaticResource L.TextSubtle}" VerticalAlignment="Center" />
-                    <Button x:Name="ClearTrayButton" Grid.Column="1" Style="{StaticResource L.IconTrash}"
+                               FontSize="11" Foreground="{StaticResource L.TextSubtle}"
+                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                               ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" />
+                    <ToggleButton x:Name="PresentOnlyToggle" Grid.Column="1"
+                                  Style="{StaticResource L.FilterToggle}" Margin="8,0,4,0"
+                                  IsChecked="False"
+                                  ToolTip="Nicht anwesende Teilnehmende ausblenden"
+                                  Checked="PresentOnlyToggle_OnChanged"
+                                  Unchecked="PresentOnlyToggle_OnChanged">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE71C;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                       VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBlock Text="Nur anwesende" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ToggleButton>
+                    <Button x:Name="ClearTrayButton" Grid.Column="2" Style="{StaticResource L.IconTrash}"
                             Content="&#xE74D;" ToolTip="Alle Teilnehmer aus der Liste entfernen"
                             Click="ClearTray_OnClick" />
                 </Grid>

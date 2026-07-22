@@ -5,13 +5,25 @@ aktualisieren. Kurz halten.
 
 ## Aktueller Stand
 
-Aula **v0.1.7**, WPF/.NET 8, komprimiertes Single-File (self-contained win-x64).
+Aula **v0.1.9**, WPF/.NET 8, komprimiertes Single-File (self-contained win-x64).
 Acta-Basis mit eingezogener Scola-Engine (`VerlaufsakteApp`). Notizen-Funktion
 entfernt, Theme „2a" (warm/hell, kein Dark Mode). Auto-Update über GitHub-Releases.
 Zwei Word-Engines (Acta / Scola) serialisiert über `XHub.Shared.WordAccessGate`.
 
 ## Letzte Änderungen
 
+- 2026-07-22 (v0.1.9): BI-To-do-Sammeldokumente werden beim temporaeren
+  Handoff explizit als DOCX (`wdFormatXMLDocument`) gespeichert. Zuvor wurde
+  nur die Endung `.docx` vorgegeben; bei einem abweichenden Word-Standardformat
+  scheiterte `SaveAs2` mit `0x800A1896` (Dateityp und Dateierweiterung nicht
+  kompatibel). Aula zeigt Fehler des BI-Sammellaufs nun zusaetzlich in einem
+  sichtbaren Fehlerdialog statt nur in der kleinen Statuszeile.
+- 2026-07-21 (v0.1.8): Scola-Fusszeile um den kompakten Ansichtsfilter
+  `Nur anwesende` erweitert. Der standardmaessig inaktive Toggle blendet
+  nicht angehakte, ausgegraute TN nur visuell aus; Tray-Daten, Batch-Logik und
+  Gesamtzahlen bleiben erhalten. Bei aktivem Filter zeigt die Auswertung die
+  sichtbare und die ausgeblendete Anzahl, Aenderungen an Anwesenheits-Haekchen
+  aktualisieren die Ansicht sofort.
 - 2026-07-21 (v0.1.7): Zwei terminierende WPF-Abstuerze mit
   `UCEERR_RENDERTHREADFAILURE` aus dem Tageslog adressiert: Aula verwendet nun
   prozessweit Software-Rendering und protokolliert Rendering-Modus/-Tier beim
@@ -220,6 +232,10 @@ Zwei Word-Engines (Acta / Scola) serialisiert über `XHub.Shared.WordAccessGate`
 
 ## Offene Punkte
 
+- **Scola v0.9.0 BI-To-do**: Das separate Projekt unter
+  `C:\Users\chris\Desktop\Verlaufsakten_App` enthaelt denselben
+  `SaveAs2(tempPath)`-Fehler wie Aula vor v0.1.9. Dort ebenfalls explizit
+  `wdFormatXMLDocument` setzen, separat versionieren, bauen und testen.
 - **Berichtsverantwortung**: separates App-Vorhaben mit Excel-Quelle,
   Statusbearbeitung, Auffälligkeitsmarkierung, TN-Detail/Stundenplan und späterem
   Drag & Drop; Aula bleibt davon unangetastet. Stundenplanlogik: BU hat Vorrang;
@@ -255,6 +271,18 @@ Zwei Word-Engines (Acta / Scola) serialisiert über `XHub.Shared.WordAccessGate`
 
 ## Test-Status
 
+- 2026-07-22: Aula v0.1.9 Release-Build mit deaktiviertem Online-NuGet-Audit
+  0 Fehler / 0 Warnungen. Self-contained Single-File-Publish erfolgreich:
+  `Aula.exe`, 145'604'086 Bytes, SHA-256
+  `B9678EB563E03C513B664CAF9749B3BB26F3555AB6C6D00B62A979062D07A573`.
+  Die angehaengten Scola- und Aula-Logs belegen denselben COM-Fehler
+  `0x800A1896` jeweils in `SaveBiTodoResultDocumentToTemp`; der Quellvergleich
+  mit Scola v0.9.0 bestaetigt den identischen `SaveAs2`-Aufruf ohne Dateiformat.
+- 2026-07-21: Aula v0.1.8 Release-Build 0 Fehler / 0 Warnungen; XAML kompiliert
+  und Filterlogik fuer sofortiges Aus-/Einblenden an die Anwesenheitsaenderung
+  gebunden. Self-contained Single-File-Publish erfolgreich: `Aula.exe`,
+  145'603'574 Bytes, SHA-256
+  `33324C10CEFA1D77150BC848AE948F288961774FB80937551A6F9CB33FDAE9D5`.
 - 2026-07-21: Aula v0.1.7 Release-Build 0 Fehler / 0 Warnungen. Isolierter
   Namens-Smoke-Test gegen einen kuenstlichen Acta-Index erfolgreich fuer
   `Jovana Vukicevic-Kljajic`/`Vukicevic-Kljajic Jovana`, nachgestellten
